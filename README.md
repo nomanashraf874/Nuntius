@@ -9,21 +9,19 @@ Flash Chat is a real time messaging app similar to WhatsApp. Firebase Firestore,
 - [x] Keyboard can move UITextfield.
 
 ## Welcome screen
+https://user-images.githubusercontent.com/73111863/209247381-20ff27bf-01e9-4cc8-8682-46537968e9b4.mp4
+
+## Register
+https://user-images.githubusercontent.com/73111863/209247285-b0b347a7-cced-46b7-be42-096ef8bcd681.mp4
+
+## Login
+https://user-images.githubusercontent.com/73111863/209247306-9e8f1061-75cc-4c8f-b5ba-e95fb359eeeb.mp4
+
+## Message
 https://user-images.githubusercontent.com/73111863/209247183-e27f33e8-3c7d-41a6-b033-fe475bc62e04.mp4
 
 
 
-## Register
-![regisChat](https://user-images.githubusercontent.com/73111863/182915457-c6830450-819f-437a-8d02-c11197f360fc.gif)
+## Logout and Portfolio
+![Simulator Screen Shot - phone 2 - 2022-12-22 at 17 19 42](https://user-images.githubusercontent.com/73111863/209247449-7a4dfc02-0744-48a2-97d7-aa686f81fb60.png)
 
-## Login
-![loginChat](https://user-images.githubusercontent.com/73111863/182915873-257b75e7-d5d2-4483-966a-be6b0eb53d52.gif)
-
-## Message
-![messageChat](https://user-images.githubusercontent.com/73111863/182916047-0ccee59d-34f4-4086-aebb-673641dceebf.gif)
-
-## Keyboard
-![keyboardChat](https://user-images.githubusercontent.com/73111863/182916326-485a2e21-e301-4211-88ee-201754de913c.gif)
-
-## Logout
-![logoutChat](https://user-images.githubusercontent.com/73111863/182916481-29dbc591-2b87-4dfa-b33b-b1b89518e41b.gif)
