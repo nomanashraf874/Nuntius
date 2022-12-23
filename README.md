@@ -1,5 +1,5 @@
 # Nuntius
-Flash Chat is an internet based messaging app similar to WhatsApp.Firebase Firestore as a backend database to store and retrieve messages from the cloud. 
+Flash Chat is a real time messaging app similar to WhatsApp. Firebase Firestore, a NoSQL backend database to store and retrieve data from the cloud.
 
 ## User Stories
 - [x] User can Login.
@@ -9,7 +9,9 @@ Flash Chat is an internet based messaging app similar to WhatsApp.Firebase Fires
 - [x] Keyboard can move UITextfield.
 
 ## Welcome screen
-![welcomeChat](https://user-images.githubusercontent.com/73111863/182915154-7d22a1e3-b8c3-47e6-9068-9c6eba1c3d28.gif)
+https://user-images.githubusercontent.com/73111863/209247183-e27f33e8-3c7d-41a6-b033-fe475bc62e04.mp4
+
+
 
 ## Register
 ![regisChat](https://user-images.githubusercontent.com/73111863/182915457-c6830450-819f-437a-8d02-c11197f360fc.gif)
