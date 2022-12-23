@@ -23,5 +23,7 @@ https://user-images.githubusercontent.com/73111863/209247183-e27f33e8-3c7d-41a6-
 
 
 ## Logout and Portfolio
-![Simulator Screen Shot - phone 2 - 2022-12-22 at 17 19 42](https://user-images.githubusercontent.com/73111863/209247449-7a4dfc02-0744-48a2-97d7-aa686f81fb60.png)
+
+https://user-images.githubusercontent.com/73111863/209247545-6161d16c-137e-4678-8b84-c675873a9699.mp4
+
 
