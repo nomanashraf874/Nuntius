@@ -9,6 +9,7 @@ Flash Chat is a real time messaging app similar to WhatsApp. Leverages Firebase 
 - [x] Add and retrieve messages from database.
 - [x] send text messages
 - [x] send image messages
+- [x] show message time and date
 - [x] get unread message notification
 - [x] realtime message retrieval
 - [x] Delete chats
