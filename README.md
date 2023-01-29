@@ -9,6 +9,7 @@ Flash Chat is a real time messaging app similar to WhatsApp. Leverages Firebase 
 - [x] Add and retrieve messages from database.
 - [x] send text messages
 - [x] send image messages
+- [x] get unread message notification
 - [x] realtime message retrieval
 - [x] Delete chats
 - [x] User profile
@@ -31,6 +32,9 @@ https://user-images.githubusercontent.com/73111863/209247183-e27f33e8-3c7d-41a6-
 
 ## Deleting Chat
 https://user-images.githubusercontent.com/73111863/209247927-f636f7d2-2e77-4db0-b178-260550603c2f.mp4
+
+## Unread Messages Notification
+https://user-images.githubusercontent.com/73111863/215352801-c9041e97-b421-4eab-897f-7409c14885a5.mp4
 
 ## Profile and Logout
 https://user-images.githubusercontent.com/73111863/209247545-6161d16c-137e-4678-8b84-c675873a9699.mp4
