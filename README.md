@@ -1,5 +1,5 @@
 # Nuntius
-Flash Chat is a real time messaging app similar to WhatsApp. Leverages Firebase Firestore, a NoSQL backend database to store and retrieve data from the cloud.
+Nuntius is a real time messaging app similar to WhatsApp. Leverages Firebase Firestore, a NoSQL backend database to store and retrieve data from the cloud.
 ![een-3](https://user-images.githubusercontent.com/73111863/209571988-5ded1db3-7bee-4500-898f-a7ea6c41ebc3.png)
 
 ## User Stories
