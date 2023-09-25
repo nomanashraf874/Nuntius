@@ -7,7 +7,6 @@
 
 import UIKit
 import FirebaseAuth
-import SDWebImage
 class ProfileViewController: UIViewController {
     @IBOutlet var profileImage: UIImageView!
     @IBOutlet var nameLabel: UILabel!
@@ -36,7 +35,14 @@ class ProfileViewController: UIViewController {
         profileImage.layer.borderWidth = 3
         profileImage.layer.masksToBounds = true
         StorageMangager.base.getURL(for: path) { url in
-            self.profileImage.sd_setImage(with: url)
+            ImageDownloader.downloadImage("\(url)") {
+                image, urlString in
+                if let imageObject = image {
+                    DispatchQueue.main.async {
+                        self.profileImage.image = imageObject
+                    }
+                }
+            }
         }
     }
     @IBAction func logoutPressed(_ sender: Any) {

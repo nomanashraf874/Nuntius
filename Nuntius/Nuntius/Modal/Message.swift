@@ -7,6 +7,7 @@
 
 import Foundation
 import MessageKit
+import UIKit
 
 struct Message: MessageType{
     var sender: SenderType

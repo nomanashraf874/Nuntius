@@ -67,7 +67,7 @@ class ChatViewController: MessagesViewController{
     
 }
 extension ChatViewController: MessagesDataSource, MessagesDisplayDelegate, MessagesLayoutDelegate, MessageCellDelegate {
-    func currentSender() -> SenderType {
+    var currentSender: MessageKit.SenderType {
         return selfSender
     }
     
@@ -88,7 +88,14 @@ extension ChatViewController: MessagesDataSource, MessagesDisplayDelegate, Messa
             guard let imageUrl = media.url else {
                 return
             }
-            imageView.sd_setImage(with: imageUrl, completed: nil)
+            ImageDownloader.downloadImage("\(imageUrl)") {
+                image, urlString in
+                if let imageObject = image {
+                    DispatchQueue.main.async {
+                        imageView.image = imageObject
+                    }
+                }
+            }
         default:
             break
         }
@@ -100,16 +107,29 @@ extension ChatViewController: MessagesDataSource, MessagesDisplayDelegate, Messa
         if sender.senderId == selfSender.senderId {
             let imageFile = email+"_profilePicture.png"
             let path = "profileImages/"+imageFile
-            print(path)
             StorageMangager.base.getURL(for: path) { otherUrl in
-                avatarView.sd_setImage(with: otherUrl, completed: nil)
+                ImageDownloader.downloadImage("\(otherUrl)") {
+                    image, urlString in
+                    if let imageObject = image {
+                        DispatchQueue.main.async {
+                            avatarView.image = imageObject
+                        }
+                    }
+                }
             }
         }
         else {
             let imageFile = otherUserEmail+"_profilePicture.png"
             let path = "profileImages/"+imageFile
             StorageMangager.base.getURL(for: path) { otherUrl in
-                avatarView.sd_setImage(with: otherUrl, completed: nil)
+                ImageDownloader.downloadImage("\(otherUrl)") {
+                    image, urlString in
+                    if let imageObject = image {
+                        DispatchQueue.main.async {
+                            avatarView.image = imageObject
+                        }
+                    }
+                }
             }
         }
         
@@ -203,7 +223,7 @@ extension ChatViewController: UIImagePickerControllerDelegate, UINavigationContr
                                       sentDate: Date(),
                                       kind: .photo(media))
                 
-                DatabaseManager.base.addMessage(chatID: DatabaseManager.base.getChatID(otherUserEmail: self.otherUserEmail, email: self.email), email: self.email, content: message, name: self.name)
+                DatabaseManager.base.addMessage(chatID: DatabaseManager.base.getChatID([self.otherUserEmail, self.email]), email: self.email, content: message, name: self.name)
             })
         }
     }

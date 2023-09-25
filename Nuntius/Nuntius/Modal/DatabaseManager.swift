@@ -3,17 +3,6 @@
 //  Nuntius
 //
 //  Created by Noman Ashraf on 11/18/22.
-//
-//user
-  //[User]
-//chat
-  //messages
-//email
-   //username
-   //coversations
-        //
-           //
-   //
         
 import Foundation
 import FirebaseFirestore
@@ -23,21 +12,27 @@ class DatabaseManager {
     static let base = DatabaseManager()
     private let db = Firestore.firestore()
     /// inserts user to database
-    public func userToData(with user: User, completionHandler: @escaping (Bool) -> Void)
-    {
-        let chats: [[String: Any]]=[]
-        db.collection(user.email).document("Username").setData([
-            "Username": user.username
-        ])
-        db.collection(user.email).document("Chats").setData([
+    public func userToData(with user: User, completionHandler: @escaping (Bool) -> Void) {
+        let chats: [[String: Any]] = []
+        let emailDocumentRef = db.collection("Emails").document(user.email)
+        emailDocumentRef.setData([
+            "Username": user.username,
             "Chats": chats
-        ])
+        ]) { error in
+            if let error = error {
+                print("Error adding document: \(error)")
+                completionHandler(false)
+            } else {
+                print("Document added successfully")
+                completionHandler(true)
+            }
+        }
         db.collection("Users").addDocument(data: [
             "Username": user.username,
             "Email": user.email
         ])
-        completionHandler(true)
     }
+
     public func getUsers(completionHandler: @escaping([User])->Void){
         var ret = [User]()
         db.collection("Users").getDocuments() { (querySnapshot, err) in
@@ -51,37 +46,59 @@ class DatabaseManager {
             }
         }
     }
-    public func addChat(otherUserEmail: String, otherName: String,email: String){
-        var name = "ERROR"
-        name = UserDefaults.standard.value(forKey: "name") as! String
-        let chatId = getChatID(otherUserEmail: otherUserEmail, email: email)
-        let docRef = db.collection(email).document("Chats")
-        let otherChatData: [String: Any] = [
-            "id": chatId,
-            "other_user_email": otherUserEmail,
-            "name": otherName
-            
-        ]
+    
+    public func addOneOnOneChat(_ memberEmails: [String],_ chatName: String) {
+        var name = UserDefaults.standard.value(forKey: "name") as! String
+        let chatId = getChatID(memberEmails,chatName)
+        let docRef = db.collection("Emails").document(memberEmails[0])
+        if memberEmails.count==1{
+            let docRef = db.collection("Emails").document(memberEmails[0])
+            let newChatData: [String: Any] = [
+                "id": chatId,
+                "name": name
+            ]
+            docRef.updateData([
+                "Chats": FieldValue.arrayUnion([newChatData])
+            ])
+        }
+        else{
+            let otherDocRef = db.collection("Emails").document(memberEmails[1])
+            let otherChatData: [String: Any] = [
+                "id": chatId,
+                "other_user_email": memberEmails[1],
+                "name": chatName
+            ]
+            let newChatData: [String: Any] = [
+                "id": chatId,
+                "other_user_email": memberEmails[0],
+                "name": name
+            ]
+            docRef.updateData([
+                "Chats": FieldValue.arrayUnion([otherChatData])
+            ])
+            otherDocRef.updateData([
+                "Chats": FieldValue.arrayUnion([newChatData])
+            ])
+        }
+        db.collection("Chats").document(chatId).setData([
+            "messages": [[String:Any]]()
+        ])
+    }
+    
+    public func joinGroupChat(email: String, id:String){
+        let docRef = db.collection("Emails").document(email)
+        var  name = id.split(separator: "_")[1]
         let newChatData: [String: Any] = [
-            "id": chatId,
-            "other_user_email": email,
+            "id": id,
             "name": name
         ]
-        let otherDocRef = db.collection(otherUserEmail).document("Chats")
         docRef.updateData([
-            "Chats": FieldValue.arrayUnion([otherChatData])
-        ])
-        otherDocRef.updateData([
             "Chats": FieldValue.arrayUnion([newChatData])
         ])
-        let messages: [[String:Any]]=[]
-        db.collection("Chats").document(chatId).setData([
-            "messages":messages
-        ])
-        
     }
+    
     func getName(email:String){
-        let docRef = db.collection(email).document("Username")
+        let docRef = db.collection("Emails").document(email)
         var ret = ""
         docRef.getDocument { document, error in
             if let document = document, document.exists {
@@ -93,6 +110,7 @@ class DatabaseManager {
             }
         }
     }
+    
     public func deleteChat(id: String, otherEmail: String, name: String){
         let email = UserDefaults.standard.value(forKey: "email")as! String
         let ChatData: [String: Any] = [
@@ -100,15 +118,16 @@ class DatabaseManager {
             "other_user_email": otherEmail,
             "name": name
         ]
-        let docRef = db.collection(email).document("Chats")
+        let docRef = db.collection("Emails").document(email)
         docRef.updateData([
             "Chats": FieldValue.arrayRemove([ChatData])
         ])
         db.collection("Chats").document(id).delete()
     }
-    var kind = ""
+    
     public func addMessage(chatID: String, email: String,content:Message,name: String){
         //let message = Message(sender: testSender, messageId: "3", sentDate: Date(), kind: .text("really testin up in here"))
+        var kind = ""
         let docRef = db.collection("Chats").document(chatID)
         var message = ""
         switch content.kind {
@@ -151,19 +170,36 @@ class DatabaseManager {
             "messages":FieldValue.arrayUnion([newMessageData])
         ])
     }
-    public func getChats(email: String,completionHandler: @escaping([[String: Any]])->Void){
-        let docRef = db.collection(email).document("Chats")
-        var chats: [[String: Any]]=[]
-        docRef.addSnapshotListener { (document, error) in
+
+    public func getChats(email: String, completionHandler: @escaping ([[String: Any]]) -> Void) {
+        // Reference the user's document within the "Emails" collection
+        let docRef = db.collection("Emails").document(email)
+        
+        docRef.addSnapshotListener { document, error in
             if let document = document, document.exists {
-                chats=document.data()!["Chats"] as! [[String : Any]]
-                completionHandler(chats)
+                if let chatData = document.data()?["Chats"] as? [[String: Any]] {
+                    completionHandler(chatData)
+                } else {
+                    print("Chats data not found")
+                }
             } else {
-                print("Error Getting Chats")
+                print("Error getting user document: \(error?.localizedDescription ?? "Unknown error")")
             }
         }
-
     }
+
+    public func getChatID(_ memberEmails: [String],_ chatName: String) -> String {
+        if memberEmails.count == 1 {
+            let email = memberEmails[0]
+            let timestamp = Int(Date().timeIntervalSince1970) // Convert timestamp to an integer
+            let uniqueCode = UUID(uuidString: "\(email)_\(timestamp)")?.uuidString ?? ""
+            return uniqueCode+"_"+chatName
+        } else {
+            let sortedEmails = memberEmails.sorted()
+            return sortedEmails.joined(separator: "_")
+        }
+    }
+    
     public func getMessages(chatID: String, completionHandler: @escaping([Message])->Void){
         let docRef = db.collection("Chats").document(chatID)
         docRef.addSnapshotListener { (document, error) in
@@ -216,15 +252,6 @@ class DatabaseManager {
         }
     }
     
-    public func getChatID(otherUserEmail:String, email: String)->String{
-        var result = ""
-        if(otherUserEmail>email){
-            result = otherUserEmail + email
-        }else{
-            result = email + otherUserEmail
-        }
-        return result
-    }
     func getLastMessage(id: String, completionHandler: @escaping(Result<[String : Any], Error>)->Void){
         let docRef = db.collection("Chats").document(id)
         docRef.getDocument{ (document, error) in

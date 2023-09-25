@@ -4,6 +4,18 @@
 //
 //  Created by Noman Ashraf on 11/15/22.
 //
+/*
+ -formatter to log view
+ -configure to log cell
+ -go over rest of code
+ -add gc feature
+    -backend for group chat
+    -enter code page
+    -logview add gc edit
+    -gc chat front end
+ - other ideas
+ -recheck moviebox code
+ */
 
 import UIKit
 let notificationKey = "nuntius.addchat"
@@ -47,40 +59,7 @@ extension LogViewController: UITableViewDelegate, UITableViewDataSource {
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "LogCell", for: indexPath) as! LogCell
-        cell.logLabel.text = chatLog[indexPath.row]["name"] as? String
-        print(chatLog[indexPath.row]["name"] as? String)
-        let email=(chatLog[indexPath.row]["other_user_email"] as? String)!
-        let imageFile = email+"_profilePicture.png"
-        let id = chatLog[indexPath.row]["id"] as? String
-        let path = "profileImages/"+imageFile
-        DatabaseManager.base.getLastMessage(id: id!) { result in
-            switch result{
-            case .success(let lastMessage):
-                let controller = ChatViewController()
-                let lastm = lastMessage["Content"] as! String
-                if(lastm.prefix(5)=="https"){
-                    cell.lastMessage.text="Image"
-                }else{
-                    cell.lastMessage.text=lastMessage["Content"] as! String
-                }
-                let date = lastMessage["Date"] as! String
-                let tdate = controller.formatter.string(from: Date())
-                var d = date.prefix(8) // Hello
-                let td = tdate.prefix(8)
-                if(d==td){
-                    d=date.suffix(7)
-                }
-                cell.dateLabe.text = String(d)
-            case .failure(_):
-                cell.lastMessage.text=nil
-                cell.dateLabe.text = nil
-                
-            }
-        }
-        cell.logImage.layer.masksToBounds = true
-        StorageMangager.base.getURL(for: path) { url in
-            cell.logImage.sd_setImage(with: url)
-        }
+        cell.configure(chatLog[indexPath.row])
         return cell
     }
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
@@ -92,9 +71,7 @@ extension LogViewController: UITableViewDelegate, UITableViewDataSource {
             tableView.beginUpdates()
             self.chatLog.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .left)
-            
             DatabaseManager.base.deleteChat(id: id,otherEmail: email,name: name)
-            
             tableView.endUpdates()
         }
     }
@@ -102,7 +79,7 @@ extension LogViewController: UITableViewDelegate, UITableViewDataSource {
         guard let cell = sender as? LogCell else{
             return
         }
-        let url = cell.logImage.sd_imageURL
+        let url = cell.imageUrl
         UserDefaults.standard.set(url, forKey: "profilePicture")
         let indexPath = tableView.indexPath(for:cell)!
         //other_user_email

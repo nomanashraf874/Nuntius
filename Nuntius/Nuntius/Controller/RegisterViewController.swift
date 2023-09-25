@@ -22,9 +22,9 @@ class RegisterViewController: UIViewController {
 
         // Do any additional setup after loading the view.
         //Setting up TapImageView
-        passwordView.layer.cornerRadius = passwordView.frame.size.height/2
-        emailView.layer.cornerRadius = emailView.frame.size.height/2
-        nameView.layer.cornerRadius = nameView.frame.size.height/2
+        passwordView.layer.cornerRadius = passwordView.frame.size.height/2.5
+        emailView.layer.cornerRadius = emailView.frame.size.height/2.5
+        nameView.layer.cornerRadius = nameView.frame.size.height/2.5
         let tapGR = UITapGestureRecognizer(target: self, action: #selector(self.imageTapped))
         profileImage.addGestureRecognizer(tapGR)
         profileImage.isUserInteractionEnabled = true
