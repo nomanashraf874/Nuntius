@@ -7,11 +7,11 @@
 import Foundation
 import FirebaseFirestore
 import MessageKit
+import CryptoKit
 
 class DatabaseManager {
     static let base = DatabaseManager()
     private let db = Firestore.firestore()
-    /// inserts user to database
     public func userToData(with user: User, completionHandler: @escaping (Bool) -> Void) {
         let chats: [[String: Any]] = []
         let emailDocumentRef = db.collection("Emails").document(user.email)
@@ -47,7 +47,7 @@ class DatabaseManager {
         }
     }
     
-    public func addOneOnOneChat(_ memberEmails: [String],_ chatName: String) {
+    public func addChat(_ memberEmails: [String],_ chatName: String) {
         var name = UserDefaults.standard.value(forKey: "name") as! String
         let chatId = getChatID(memberEmails,chatName)
         let docRef = db.collection("Emails").document(memberEmails[0])
@@ -55,7 +55,7 @@ class DatabaseManager {
             let docRef = db.collection("Emails").document(memberEmails[0])
             let newChatData: [String: Any] = [
                 "id": chatId,
-                "name": name
+                "name": chatName
             ]
             docRef.updateData([
                 "Chats": FieldValue.arrayUnion([newChatData])
@@ -80,14 +80,22 @@ class DatabaseManager {
                 "Chats": FieldValue.arrayUnion([newChatData])
             ])
         }
-        db.collection("Chats").document(chatId).setData([
-            "messages": [[String:Any]]()
-        ])
+        let data: [String: Any] = [
+            "messages": [[String: Any]]()
+        ]
+        let chatRef = db.collection("Chats").document(chatId)
+        chatRef.getDocument { (document, error) in
+            if let document = document, document.exists {
+                print("Document already exists, not updated.")
+            } else {
+                chatRef.setData(data)
+            }
+        }
     }
     
-    public func joinGroupChat(email: String, id:String){
+    public func joinGroupChat(_ email: String,_ id:String){
         let docRef = db.collection("Emails").document(email)
-        var  name = id.split(separator: "_")[1]
+        let name = id.split(separator: "_")[1]
         let newChatData: [String: Any] = [
             "id": id,
             "name": name
@@ -103,7 +111,6 @@ class DatabaseManager {
         docRef.getDocument { document, error in
             if let document = document, document.exists {
                 ret=document.data()?["Username"] as! String
-                print(ret)
                 UserDefaults.standard.set(ret,forKey: "name")
             } else {
                 print("ERROR2")
@@ -126,7 +133,6 @@ class DatabaseManager {
     }
     
     public func addMessage(chatID: String, email: String,content:Message,name: String){
-        //let message = Message(sender: testSender, messageId: "3", sentDate: Date(), kind: .text("really testin up in here"))
         var kind = ""
         let docRef = db.collection("Chats").document(chatID)
         var message = ""
@@ -172,7 +178,6 @@ class DatabaseManager {
     }
 
     public func getChats(email: String, completionHandler: @escaping ([[String: Any]]) -> Void) {
-        // Reference the user's document within the "Emails" collection
         let docRef = db.collection("Emails").document(email)
         
         docRef.addSnapshotListener { document, error in
@@ -191,14 +196,27 @@ class DatabaseManager {
     public func getChatID(_ memberEmails: [String],_ chatName: String) -> String {
         if memberEmails.count == 1 {
             let email = memberEmails[0]
-            let timestamp = Int(Date().timeIntervalSince1970) // Convert timestamp to an integer
-            let uniqueCode = UUID(uuidString: "\(email)_\(timestamp)")?.uuidString ?? ""
+            let timestamp = String(Date().timeIntervalSince1970)
+            let uniqueCode = generateUniqueCode(email, timestamp)
             return uniqueCode+"_"+chatName
         } else {
             let sortedEmails = memberEmails.sorted()
             return sortedEmails.joined(separator: "_")
         }
     }
+    
+    private func generateUniqueCode(_ email: String, _ timestamp: String) -> String {
+        let combinedString = "\(email)_\(timestamp)"
+        if let inputData = combinedString.data(using: .utf8) {
+                let hashedData = SHA256.hash(data: inputData)
+                let hashString = hashedData.compactMap { String(format: "%02x", $0) }.joined()
+                let truncatedHash = String(hashString.prefix(6))
+                return truncatedHash
+            } else {
+                return ""
+            }
+    }
+
     
     public func getMessages(chatID: String, completionHandler: @escaping([Message])->Void){
         let docRef = db.collection("Chats").document(chatID)
@@ -220,12 +238,10 @@ class DatabaseManager {
                     }
                     var kind: MessageKind?
                     if item == "photo" {
-                        // photo
                         guard let imageUrl = URL(string: content),
                               let placeHolder = UIImage(systemName: "plus") else {
                                   return
                               }
-                        print(imageUrl)
                         let media = ImageMediaItem(url: imageUrl,
                                           image: nil,
                                           placeholderImage: placeHolder,

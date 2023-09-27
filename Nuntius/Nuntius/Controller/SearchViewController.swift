@@ -43,7 +43,7 @@ extension SearchViewController:UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         let targetUser = results[indexPath.row]
-        DatabaseManager.base.addOneOnOneChat(otherUserEmail: targetUser.email, otherName: targetUser.username, email: email)
+        DatabaseManager.base.addChat([email,targetUser.email], targetUser.username)
         NotificationCenter.default.post(name: Notification.Name(rawValue: notificationKey), object: self)
         self.navigationController?.popViewController(animated: true)
         
@@ -66,7 +66,7 @@ extension SearchViewController: UISearchBarDelegate{
         else{
             DatabaseManager.base.getUsers(completionHandler: {users in
                 self.searchDone=true
-                self.allUsers=users
+                self.allUsers=users.filter { $0.email != self.email }
                 self.searchUsers(with: text)
                     
             })

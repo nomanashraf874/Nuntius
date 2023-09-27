@@ -27,6 +27,7 @@
 		9544F5B6292556A5000BAF00 /* WelcomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9544F5B5292556A5000BAF00 /* WelcomeViewController.swift */; };
 		959D981E2927DEE100603C03 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 959D981D2927DEE100603C03 /* GoogleService-Info.plist */; };
 		959D982029281D5E00603C03 /* DatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 959D981F29281D5E00603C03 /* DatabaseManager.swift */; };
+		95E764A92AC4DBB700CF52BE /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 95E764A82AC4DBB700CF52BE /* SDWebImage */; };
 		95EEA1B2292E7B570037AA3C /* ChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95EEA1B1292E7B560037AA3C /* ChatViewController.swift */; };
 		95EEA1B4292E7F250037AA3C /* LogCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95EEA1B3292E7F250037AA3C /* LogCell.swift */; };
 		95EEA1B6292EC3B70037AA3C /* StorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95EEA1B5292EC3B70037AA3C /* StorageManager.swift */; };
@@ -71,6 +72,7 @@
 				954256292AB6032C00D1FAF0 /* FirebaseAuth in Frameworks */,
 				9542562B2AB6032C00D1FAF0 /* FirebaseFirestoreSwift in Frameworks */,
 				954256302AB6066900D1FAF0 /* MessageKit in Frameworks */,
+				95E764A92AC4DBB700CF52BE /* SDWebImage in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -176,6 +178,7 @@
 				9542562A2AB6032C00D1FAF0 /* FirebaseFirestoreSwift */,
 				9542562C2AB6032C00D1FAF0 /* FirebaseStorage */,
 				9542562F2AB6066900D1FAF0 /* MessageKit */,
+				95E764A82AC4DBB700CF52BE /* SDWebImage */,
 			);
 			productName = Nuntius;
 			productReference = 9544F5872923FE56000BAF00 /* Nuntius.app */;
@@ -208,6 +211,7 @@
 			packageReferences = (
 				954256272AB6032C00D1FAF0 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				9542562E2AB6066900D1FAF0 /* XCRemoteSwiftPackageReference "MessageKit" */,
+				95E764A72AC4DBB700CF52BE /* XCRemoteSwiftPackageReference "SDWebImage" */,
 			);
 			productRefGroup = 9544F5882923FE56000BAF00 /* Products */;
 			projectDirPath = "";
@@ -494,6 +498,14 @@
 				minimumVersion = 4.0.0;
 			};
 		};
+		95E764A72AC4DBB700CF52BE /* XCRemoteSwiftPackageReference "SDWebImage" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SDWebImage/SDWebImage";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -516,6 +528,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 9542562E2AB6066900D1FAF0 /* XCRemoteSwiftPackageReference "MessageKit" */;
 			productName = MessageKit;
+		};
+		95E764A82AC4DBB700CF52BE /* SDWebImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 95E764A72AC4DBB700CF52BE /* XCRemoteSwiftPackageReference "SDWebImage" */;
+			productName = SDWebImage;
 		};
 /* End XCSwiftPackageProductDependency section */
 

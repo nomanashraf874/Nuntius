@@ -9,13 +9,14 @@ import UIKit
 import MessageKit
 import InputBarAccessoryView
 import FirebaseFirestore
+import SDWebImage
 
 class ChatViewController: MessagesViewController{
     private var messages = [Message]()
     var id = ""
     var name = ""
-    var otherUserEmail = ""
-    var otherUserName = ""
+    var otherUserEmail: String? = nil
+    var chatName = ""
     let email = (UserDefaults.standard.value(forKey: "email") as? String)!
     let url = UserDefaults.standard.value(forKey: "profilePicture") as? URL
     let selfSender = Sender(profileImageURL: "", senderId: (UserDefaults.standard.value(forKey: "email") as? String)!, displayName: "Me")
@@ -25,11 +26,6 @@ class ChatViewController: MessagesViewController{
         formatter.timeStyle = .short
         return formatter
       }()
-    /*
-     let formatter2 = DateFormatter()
-     formatter2.timeStyle = .medium
-     print(formatter2.string(from: today))
-     */
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -88,48 +84,19 @@ extension ChatViewController: MessagesDataSource, MessagesDisplayDelegate, Messa
             guard let imageUrl = media.url else {
                 return
             }
-            ImageDownloader.downloadImage("\(imageUrl)") {
-                image, urlString in
-                if let imageObject = image {
-                    DispatchQueue.main.async {
-                        imageView.image = imageObject
-                    }
-                }
+            DispatchQueue.main.async {
+                imageView.sd_setImage(with: imageUrl)
             }
         default:
             break
         }
     }
     func configureAvatarView(_ avatarView: AvatarView, for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) {
-        
-        let sender = message.sender
-        
-        if sender.senderId == selfSender.senderId {
-            let imageFile = email+"_profilePicture.png"
-            let path = "profileImages/"+imageFile
-            StorageMangager.base.getURL(for: path) { otherUrl in
-                ImageDownloader.downloadImage("\(otherUrl)") {
-                    image, urlString in
-                    if let imageObject = image {
-                        DispatchQueue.main.async {
-                            avatarView.image = imageObject
-                        }
-                    }
-                }
-            }
-        }
-        else {
-            let imageFile = otherUserEmail+"_profilePicture.png"
-            let path = "profileImages/"+imageFile
-            StorageMangager.base.getURL(for: path) { otherUrl in
-                ImageDownloader.downloadImage("\(otherUrl)") {
-                    image, urlString in
-                    if let imageObject = image {
-                        DispatchQueue.main.async {
-                            avatarView.image = imageObject
-                        }
-                    }
-                }
+        let imageFile = message.sender.senderId+"_profilePicture.png"
+        let path = "profileImages/"+imageFile
+        StorageMangager.base.getURL(for: path) { otherUrl in
+            DispatchQueue.main.async {
+                avatarView.sd_setImage(with: otherUrl)
             }
         }
         
@@ -142,7 +109,6 @@ extension ChatViewController: MessagesDataSource, MessagesDisplayDelegate, Messa
     }
     func cellTopLabelAttributedText(for message: MessageType, at indexPath: IndexPath) -> NSAttributedString? {
         if indexPath.section % 7 == 0 {
-            print(message.sentDate)
             var editedDate = MessageKitDateFormatter.shared.string(from: message.sentDate)
             if editedDate[0]=="T"{
                 editedDate = String(editedDate.prefix(5))
@@ -206,7 +172,7 @@ extension ChatViewController: UIImagePickerControllerDelegate, UINavigationContr
 
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         picker.dismiss(animated: true, completion: nil)
-        let messageId = email+"_"+otherUserEmail+"_"+formatter.string(from: Date())
+        let messageId = email+"_"+formatter.string(from: Date())
         if let image = info[.editedImage] as? UIImage, let imageData =  image.pngData() {
             let fileName = "photoMessage" + messageId.replacingOccurrences(of: " ", with: "-") + ".png"
             StorageMangager.base.storeImage(with: imageData, fileName: fileName, completionHandler: { urlString in
@@ -222,8 +188,14 @@ extension ChatViewController: UIImagePickerControllerDelegate, UINavigationContr
                                       messageId: messageId,
                                       sentDate: Date(),
                                       kind: .photo(media))
-                
-                DatabaseManager.base.addMessage(chatID: DatabaseManager.base.getChatID([self.otherUserEmail, self.email]), email: self.email, content: message, name: self.name)
+                var id = ""
+                if let otherUserEmail = self.otherUserEmail{
+                    id = DatabaseManager.base.getChatID([otherUserEmail, self.email],self.chatName)
+                }
+                else{
+                    id = DatabaseManager.base.getChatID([self.email],self.chatName)
+                }
+                DatabaseManager.base.addMessage(chatID: id, email: self.email, content: message, name: self.name)
             })
         }
     }
@@ -235,7 +207,6 @@ extension ChatViewController: InputBarAccessoryViewDelegate {
             return
         }
         let selfSender = self.selfSender
-        print("Sending: \(text)")
         
         let message = Message(sender: selfSender,
                               messageId: "",

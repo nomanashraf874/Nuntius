@@ -584,7 +584,7 @@
                         <barButtonItem key="backBarButtonItem" title="Cancel" id="RAp-Ix-T9E"/>
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="QeL-Rm-shT">
                             <connections>
-                                <segue destination="ErG-Yy-YJ9" kind="show" identifier="toSearch" id="soZ-Tg-Oq6"/>
+                                <action selector="addChat:" destination="gca-CW-qr4" id="krN-W2-gxb"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -592,11 +592,12 @@
                         <outlet property="emptyChat" destination="VnW-cz-AW8" id="cKz-e8-4mw"/>
                         <outlet property="indicator" destination="jbm-FG-g9K" id="nMf-Sg-cHV"/>
                         <outlet property="tableView" destination="EeW-aX-9W9" id="tdM-Ph-Q9Y"/>
+                        <segue destination="ErG-Yy-YJ9" kind="show" identifier="searchChat" id="ys8-jD-aCf"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="lzr-cv-brs" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="5420.289855072464" y="58.928571428571423"/>
+            <point key="canvasLocation" x="5481" y="157"/>
         </scene>
         <!--BlankChat-->
         <scene sceneID="0em-43-PRC">

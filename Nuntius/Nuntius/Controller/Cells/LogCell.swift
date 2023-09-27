@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SDWebImage
 
 class LogCell: UITableViewCell {
 
@@ -50,22 +51,22 @@ class LogCell: UITableViewCell {
                 self.dateLabe.text = nil
                 
             }
-        }
-        
-        let email=(log["other_user_email"] as? String)!
-        let path = "profileImages/" + email + "_profilePicture.png"
-        StorageMangager.base.getURL(for: path) { url in
-            self.imageUrl=url
-            ImageDownloader.downloadImage("\(url)") {
-                image, urlString in
-                if let imageObject = image {
+            if let email = log["other_user_email"] as? String{
+                let path = "profileImages/" + email + "_profilePicture.png"
+                StorageMangager.base.getURL(for: path) { url in
+                    self.imageUrl=url
                     DispatchQueue.main.async {
-                        self.logImage.image = imageObject
+                        self.logImage.sd_setImage(with: url)
                     }
                 }
             }
+            else{
+                DispatchQueue.main.async {
+                    self.logImage.image=UIImage(named: "gc")!
+                }
+            }
+            self.logImage.layer.masksToBounds = true
         }
-        logImage.layer.masksToBounds = true
     }
 
 }

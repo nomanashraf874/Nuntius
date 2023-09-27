@@ -5,6 +5,8 @@
 //  Created by Noman Ashraf on 11/15/22.
 //
 
+//unread counter
+
 import UIKit
 import FirebaseAuth
 class LoginViewController: UIViewController {
@@ -19,7 +21,6 @@ class LoginViewController: UIViewController {
         super.viewDidLoad()
         passwordView.layer.cornerRadius = passwordView.frame.size.height/3
         emailView.layer.cornerRadius = emailView.frame.size.height/3
-        // Do any additional setup after loading the view.
         
     }
     
