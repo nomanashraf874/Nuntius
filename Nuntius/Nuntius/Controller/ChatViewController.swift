@@ -30,6 +30,8 @@ class ChatViewController: MessagesViewController{
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         self.navigationItem.title=name
+        let chatCode = UIBarButtonItem(title: "Code", style: .plain, target: self, action: #selector(getCode))
+        navigationItem.rightBarButtonItems = [chatCode]
         messagesCollectionView.messagesDataSource = self
         messagesCollectionView.messagesLayoutDelegate = self
         messagesCollectionView.messagesDisplayDelegate = self
@@ -50,8 +52,18 @@ class ChatViewController: MessagesViewController{
         messageInputBar.setLeftStackViewWidthConstant(to: 36, animated: false)
         messageInputBar.setStackViewItems([inputButton], forStack: .left, animated: false)
     }
-    func fetchMessages(){
+    
+    @objc func getCode() {
+        let alertController = UIAlertController(title: "chatCode", message: "\(id)", preferredStyle: .alert)
         
+        let okAction = UIAlertAction(title: "OK", style: .default) { _ in
+            alertController.dismiss(animated: true, completion: nil)
+        }
+        alertController.addAction(okAction)
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    func fetchMessages(){
         DatabaseManager.base.getMessages(chatID: id) { messageList in
             self.messages=messageList
             DispatchQueue.main.async {

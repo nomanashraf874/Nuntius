@@ -19,9 +19,6 @@ class RegisterViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
-        //Setting up TapImageView
         passwordView.layer.cornerRadius = passwordView.frame.size.height/2.5
         emailView.layer.cornerRadius = emailView.frame.size.height/2.5
         nameView.layer.cornerRadius = nameView.frame.size.height/2.5
@@ -31,7 +28,6 @@ class RegisterViewController: UIViewController {
         profileImage.layer.masksToBounds = true
         profileImage.layer.cornerRadius = profileImage.frame.size.width/2
     }
-    //Setting up TapImageView 2
     @objc func imageTapped(sender: UITapGestureRecognizer) {
         if sender.state == .ended {
             presentChoice()

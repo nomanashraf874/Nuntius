@@ -3,13 +3,8 @@
 //  Nuntius
 //
 //  Created by Noman Ashraf on 11/16/22.
-//fix bugs
- //chat date
- //inncorrect passcode
- //loading
- //trial
-//profile design
-//chat controller design
+//message notif
+//stay log
 
 import UIKit
 import FirebaseAuth

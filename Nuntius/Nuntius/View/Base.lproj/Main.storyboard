@@ -4,6 +4,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21678"/>
+        <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -613,7 +614,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hSa-xu-B7m" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="6296" y="69"/>
+            <point key="canvasLocation" x="6295.652173913044" y="68.973214285714278"/>
         </scene>
         <!--Profile-->
         <scene sceneID="we3-Bc-5NO">
@@ -707,8 +708,8 @@
         <scene sceneID="tcT-ck-ZRf">
             <objects>
                 <navigationController id="wuY-zx-753" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Chats" selectedImage="bubble.left" catalog="system" id="9jb-ci-Gnh">
-                        <color key="badgeColor" red="0.62745098040000002" green="0.20910503850000001" blue="0.94117647059999998" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <tabBarItem key="tabBarItem" title="Chats" image="bubble.left" catalog="system" selectedImage="bubble.left" id="9jb-ci-Gnh">
+                        <color key="badgeColor" name="BrandLightPurple"/>
                     </tabBarItem>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="HkI-dZ-o3G">
@@ -728,7 +729,11 @@
         <scene sceneID="fsl-DJ-exK">
             <objects>
                 <navigationController storyboardIdentifier="loggedout" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="Pfc-i0-rLj" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Profile" selectedImage="person" catalog="system" id="0I1-e6-7kf"/>
+                    <tabBarItem key="tabBarItem" title="Profile" id="0I1-e6-7kf">
+                        <imageReference key="image" image="person" catalog="system" symbolScale="medium"/>
+                        <color key="badgeColor" name="BrandPurple"/>
+                        <imageReference key="selectedImage" image="person" catalog="system" symbolScale="medium"/>
+                    </tabBarItem>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="Ppb-lH-dFa">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="96"/>
@@ -759,6 +764,9 @@
         </namedColor>
         <namedColor name="BrandLightBlue">
             <color red="0.9649999737739563" green="0.43500000238418579" blue="0.44699999690055847" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="BrandLightPurple">
+            <color red="0.79199999570846558" green="0.86699998378753662" blue="0.79600000381469727" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </namedColor>
         <namedColor name="BrandPurple">
             <color red="0.075000002980232239" green="0.27099999785423279" blue="0.19599999487400055" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

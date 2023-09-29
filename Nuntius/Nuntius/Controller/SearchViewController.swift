@@ -19,8 +19,6 @@ class SearchViewController: UIViewController {
     var searchDone = false
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
         navigationItem.titleView=searchBar
         searchBar.delegate = self
         searchBar.becomeFirstResponder()
@@ -34,7 +32,6 @@ extension SearchViewController:UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return results.count
     }
-    //create cell
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "SearchCell",for: indexPath) as! SearchCell
         cell.searchLabel.text=results[indexPath.row].username

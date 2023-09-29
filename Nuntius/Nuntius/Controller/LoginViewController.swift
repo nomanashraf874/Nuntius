@@ -42,7 +42,7 @@ class LoginViewController: UIViewController {
                     case .invalidEmail:
                         self.loginError(error: "Invalid email")
                     default:
-                        print(error.localizedDescription)
+                        self.loginError(error: error.localizedDescription)
                     }
                 }
                 return
