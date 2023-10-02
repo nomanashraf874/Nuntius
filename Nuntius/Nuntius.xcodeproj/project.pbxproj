@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		95191CE62936913000C58925 /* SearchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95191CE52936912F00C58925 /* SearchCell.swift */; };
+		9522CDDC2ACA39FA00F1085A /* LogCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9522CDDA2ACA39FA00F1085A /* LogCell.xib */; };
 		954256292AB6032C00D1FAF0 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 954256282AB6032C00D1FAF0 /* FirebaseAuth */; };
 		9542562B2AB6032C00D1FAF0 /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 9542562A2AB6032C00D1FAF0 /* FirebaseFirestoreSwift */; };
 		9542562D2AB6032C00D1FAF0 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 9542562C2AB6032C00D1FAF0 /* FirebaseStorage */; };
@@ -38,6 +39,7 @@
 
 /* Begin PBXFileReference section */
 		95191CE52936912F00C58925 /* SearchCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchCell.swift; sourceTree = "<group>"; };
+		9522CDDA2ACA39FA00F1085A /* LogCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = LogCell.xib; sourceTree = "<group>"; };
 		954256312AB6074400D1FAF0 /* ImageDownloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDownloader.swift; sourceTree = "<group>"; };
 		9544F5872923FE56000BAF00 /* Nuntius.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Nuntius.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9544F58A2923FE56000BAF00 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -79,6 +81,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9537F3762ACB5E0F00EF30F2 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				9522CDDA2ACA39FA00F1085A /* LogCell.xib */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
 		954256332AB622D500D1FAF0 /* Cells */ = {
 			isa = PBXGroup;
 			children = (
@@ -153,6 +163,7 @@
 				9544F5902923FE56000BAF00 /* Main.storyboard */,
 				9544F5982923FE5B000BAF00 /* LaunchScreen.storyboard */,
 				9544F5962923FE5B000BAF00 /* Assets.xcassets */,
+				9537F3762ACB5E0F00EF30F2 /* Cells */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -228,6 +239,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9544F59A2923FE5B000BAF00 /* LaunchScreen.storyboard in Resources */,
+				9522CDDC2ACA39FA00F1085A /* LogCell.xib in Resources */,
 				959D981E2927DEE100603C03 /* GoogleService-Info.plist in Resources */,
 				9544F5972923FE5B000BAF00 /* Assets.xcassets in Resources */,
 				9544F5922923FE56000BAF00 /* Main.storyboard in Resources */,

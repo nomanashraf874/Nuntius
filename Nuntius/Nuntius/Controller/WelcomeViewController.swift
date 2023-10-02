@@ -3,8 +3,10 @@
 //  Nuntius
 //
 //  Created by Noman Ashraf on 11/16/22.
-//message notif
-//stay log
+//image
+//reg load
+//dab ret
+//unre
 
 import UIKit
 import FirebaseAuth
@@ -18,9 +20,15 @@ class WelcomeViewController: UIViewController {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.isNavigationBarHidden = false
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
         checkIfLoggedIn()
-        // Do any additional setup after loading the view.
-        //Make the title apper word by word
         titleLabel.text=""
         var index = 0;
         let titleText = "꒰ঌNuntius໒꒱"
@@ -31,17 +39,15 @@ class WelcomeViewController: UIViewController {
             index = index+1;
         }
     }
-    //reverse the special animations you did in viewWillAppear
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        navigationController?.isNavigationBarHidden = false
-    }
+
     private func checkIfLoggedIn(){
         if FirebaseAuth.Auth.auth().currentUser != nil{
-            let vc = storyboard?.instantiateViewController(withIdentifier: "already") as! UITabBarController
-            self.present(vc,animated: true, completion:nil)
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let vc = storyboard.instantiateViewController(withIdentifier: "already")
+            self.present(vc,animated: true)
         }
     }
+    
     @IBAction func prepareForUnwind(segue: UIStoryboardSegue) {
 
     }

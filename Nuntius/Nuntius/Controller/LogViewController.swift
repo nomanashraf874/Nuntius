@@ -24,6 +24,8 @@ class LogViewController: UIViewController {
         NotificationCenter.default.addObserver(forName: Notification.Name(rawValue: notificationKey), object: nil, queue: .main) { _ in
             self.fetchChats()
         }
+        self.tableView.register(UINib(nibName: "LogCell", bundle: nil), forCellReuseIdentifier: "LogCell")
+        DatabaseManager.base.getName(email: email)
         fetchChats()
     }
     func fetchChats(){
@@ -42,9 +44,12 @@ class LogViewController: UIViewController {
 
         let groupChatAction = UIAlertAction(title: "Group Chat", style: .default) { _ in            self.showGroupChatOptions()
         }
-
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
         alertController.addAction(oneOnOneAction)
         alertController.addAction(groupChatAction)
+        alertController.addAction(cancelAction)
 
         self.present(alertController, animated: true, completion: nil)
     }
@@ -58,9 +63,11 @@ class LogViewController: UIViewController {
         let createGroupAction = UIAlertAction(title: "Create Group Chat", style: .default) { _ in
             self.askForChatName()
         }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
         
         groupChatOptionsController.addAction(joinGroupAction)
         groupChatOptionsController.addAction(createGroupAction)
+        groupChatOptionsController.addAction(cancelAction)
         
         self.present(groupChatOptionsController, animated: true, completion: nil)
     }
@@ -121,12 +128,22 @@ extension LogViewController: UITableViewDelegate, UITableViewDataSource {
             // begin delete
             let id = chatLog[indexPath.row]["id"] as! String
             let name = chatLog[indexPath.row]["name"] as! String
-            let email=chatLog[indexPath.row]["other_user_email"] as! String
+            if let email=chatLog[indexPath.row]["other_user_email"] as? String{
+                DatabaseManager.base.deleteChat(id: id,otherEmail: email,name: name)
+            }
+            else{
+                DatabaseManager.base.deleteChat(id: id,otherEmail: nil,name: name)
+            }
             tableView.beginUpdates()
             self.chatLog.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .left)
             DatabaseManager.base.deleteChat(id: id,otherEmail: email,name: name)
             tableView.endUpdates()
+        }
+    }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if let selectedCell = tableView.cellForRow(at: indexPath) {
+                self.performSegue(withIdentifier: "showChat", sender: selectedCell)
         }
     }
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {

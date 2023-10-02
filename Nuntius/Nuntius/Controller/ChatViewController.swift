@@ -202,10 +202,10 @@ extension ChatViewController: UIImagePickerControllerDelegate, UINavigationContr
                                       kind: .photo(media))
                 var id = ""
                 if let otherUserEmail = self.otherUserEmail{
-                    id = DatabaseManager.base.getChatID([otherUserEmail, self.email],self.chatName)
+                    id = DatabaseManager.base.getChatID([otherUserEmail, self.email])
                 }
                 else{
-                    id = DatabaseManager.base.getChatID([self.email],self.chatName)
+                    id = DatabaseManager.base.getChatID([self.email])
                 }
                 DatabaseManager.base.addMessage(chatID: id, email: self.email, content: message, name: self.name)
             })

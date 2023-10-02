@@ -49,7 +49,7 @@ class DatabaseManager {
     
     public func addChat(_ memberEmails: [String],_ chatName: String) {
         var name = UserDefaults.standard.value(forKey: "name") as! String
-        let chatId = getChatID(memberEmails,chatName)
+        let chatId = getChatID(memberEmails)
         let docRef = db.collection("Emails").document(memberEmails[0])
         if memberEmails.count==1{
             let docRef = db.collection("Emails").document(memberEmails[0])
@@ -81,6 +81,7 @@ class DatabaseManager {
             ])
         }
         let data: [String: Any] = [
+            "chatName":chatName,
             "messages": [[String: Any]]()
         ]
         let chatRef = db.collection("Chats").document(chatId)
@@ -95,14 +96,15 @@ class DatabaseManager {
     
     public func joinGroupChat(_ email: String,_ id:String){
         let docRef = db.collection("Emails").document(email)
-        let name = id.split(separator: "_")[1]
-        let newChatData: [String: Any] = [
-            "id": id,
-            "name": name
-        ]
-        docRef.updateData([
-            "Chats": FieldValue.arrayUnion([newChatData])
-        ])
+        getChatName(chatId: id) { name in
+            let newChatData: [String: Any] = [
+                "id": id,
+                "name": name
+            ]
+            docRef.updateData([
+                "Chats": FieldValue.arrayUnion([newChatData])
+            ])
+        }
     }
     
     func getName(email:String){
@@ -113,23 +115,45 @@ class DatabaseManager {
                 ret=document.data()?["Username"] as! String
                 UserDefaults.standard.set(ret,forKey: "name")
             } else {
-                print("ERROR2")
+                print("Username Not Set")
             }
         }
     }
     
-    public func deleteChat(id: String, otherEmail: String, name: String){
+    func getChatName(chatId:String,completionHandler:@escaping(String)->Void){
+        let docRef = db.collection("Chats").document(chatId)
+        var ret = ""
+        docRef.getDocument { document, error in
+            if let document = document, document.exists {
+                ret=document.data()?["chatName"] as! String
+                completionHandler(ret)
+            } else {
+                print("Chat Name Not Set")
+            }
+        }
+    }
+    
+    public func deleteChat(id: String, otherEmail: String?, name: String){
         let email = UserDefaults.standard.value(forKey: "email")as! String
-        let ChatData: [String: Any] = [
-            "id": id,
-            "other_user_email": otherEmail,
-            "name": name
-        ]
+        var ChatData = [String: Any]()
+        if let otherEmail = otherEmail {
+            ChatData = [
+                "id": id,
+                "other_user_email": otherEmail,
+                "name": name
+            ]
+            db.collection("Chats").document(id).delete()
+        }
+        else{
+            ChatData = [
+                "id": id,
+                "name": name
+            ]
+        }
         let docRef = db.collection("Emails").document(email)
         docRef.updateData([
             "Chats": FieldValue.arrayRemove([ChatData])
         ])
-        db.collection("Chats").document(id).delete()
     }
     
     public func addMessage(chatID: String, email: String,content:Message,name: String){
@@ -193,12 +217,12 @@ class DatabaseManager {
         }
     }
 
-    public func getChatID(_ memberEmails: [String],_ chatName: String) -> String {
+    public func getChatID(_ memberEmails: [String]) -> String {
         if memberEmails.count == 1 {
             let email = memberEmails[0]
             let timestamp = String(Date().timeIntervalSince1970)
             let uniqueCode = generateUniqueCode(email, timestamp)
-            return uniqueCode+"_"+chatName
+            return uniqueCode
         } else {
             let sortedEmails = memberEmails.sorted()
             return sortedEmails.joined(separator: "_")
@@ -272,14 +296,15 @@ class DatabaseManager {
         let docRef = db.collection("Chats").document(id)
         docRef.getDocument{ (document, error) in
             if let document = document, document.exists {
-                let messages=document.data()!["messages"] as! [[String : Any]]
-                if messages.count > 0 {
-                    let lastMessage = messages[messages.count-1]
+                if let messages = document.data()?["messages"] as? [[String: Any]], !messages.isEmpty {
+                    let lastMessage = messages.last!
                     completionHandler(.success(lastMessage))
                 }
                 else{
                     completionHandler(.failure(CustomError.noLastMessage))
                 }
+            }else{
+                completionHandler(.failure(CustomError.noLastMessage))
             }
         }
     }

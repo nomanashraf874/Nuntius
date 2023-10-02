@@ -10,19 +10,16 @@ import SDWebImage
 
 class LogCell: UITableViewCell {
 
-    @IBOutlet var dateLabe: UILabel!
-    @IBOutlet var lastMessage: UILabel!
-    @IBOutlet var logImage: UIImageView!
-    @IBOutlet var logLabel: UILabel!
+    
+    @IBOutlet weak var logImage: UIImageView!
+    @IBOutlet weak var logLabel: UILabel!
+    @IBOutlet weak var dateLabel: UILabel!
+    @IBOutlet weak var lastMessage: UILabel!
+    
     var imageUrl : URL? = nil
     override func awakeFromNib() {
         super.awakeFromNib()
         logImage.layer.cornerRadius = logImage.frame.size.width/2
-    }
-
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-        // Configure the view for the selected state
     }
     
     func configure(_ log: [String: Any]){
@@ -45,10 +42,11 @@ class LogCell: UITableViewCell {
                 if(d==td){
                     d=date.suffix(7)
                 }
-                self.dateLabe.text = String(d)
+                print(String(d))
+                self.dateLabel.text = String(d)
             case .failure(_):
                 self.lastMessage.text=nil
-                self.dateLabe.text = nil
+                self.dateLabel.text = nil
                 
             }
             if let email = log["other_user_email"] as? String{
