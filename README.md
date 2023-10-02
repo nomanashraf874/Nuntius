@@ -4,8 +4,6 @@ Nuntius is a real time messaging app similar to WhatsApp. Leverages Firebase Fir
 
 ## User Stories
 - [x] User can Login.
-- [x] User can Logout.
-- [x] Create chats
 - [x] Group Chat
 - [x] One on One chat
 - [x] Add and retrieve messages from database.
@@ -16,7 +14,7 @@ Nuntius is a real time messaging app similar to WhatsApp. Leverages Firebase Fir
 - [x] realtime message retrieval
 - [x] Delete chats
 - [x] User profile
-- [x] Logout
+- [x] User can Logout.
 
 ## Welcome screen
 https://user-images.githubusercontent.com/73111863/209247381-20ff27bf-01e9-4cc8-8682-46537968e9b4.mp4
