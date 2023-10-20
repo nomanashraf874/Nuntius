@@ -1,5 +1,6 @@
 # Nuntius
-Nuntius is a real time messaging app similar to WhatsApp. Leverages Firebase Firestore, a NoSQL backend database to store and retrieve data from the cloud.
+Nuntius is a real-time messaging app offering seamless one-on-one and group chats with media sharing. Experience
+instant messaging and cloud-based storage for a dynamic and engaging chat experience
 ![overview](https://github.com/nomanashraf874/Nuntius/assets/73111863/f06af877-72b2-4d8a-95bc-390b00c7d6ef)
 
 ## User Stories
