@@ -17,7 +17,6 @@
 		9544F58B2923FE56000BAF00 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9544F58A2923FE56000BAF00 /* AppDelegate.swift */; };
 		9544F58D2923FE56000BAF00 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9544F58C2923FE56000BAF00 /* SceneDelegate.swift */; };
 		9544F5922923FE56000BAF00 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9544F5902923FE56000BAF00 /* Main.storyboard */; };
-		9544F5952923FE56000BAF00 /* Nuntius.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 9544F5932923FE56000BAF00 /* Nuntius.xcdatamodeld */; };
 		9544F5972923FE5B000BAF00 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9544F5962923FE5B000BAF00 /* Assets.xcassets */; };
 		9544F59A2923FE5B000BAF00 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9544F5982923FE5B000BAF00 /* LaunchScreen.storyboard */; };
 		9544F5A72924010E000BAF00 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9544F5A62924010E000BAF00 /* LoginViewController.swift */; };
@@ -26,6 +25,7 @@
 		9544F5B1292405F0000BAF00 /* LogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9544F5B0292405F0000BAF00 /* LogViewController.swift */; };
 		9544F5B42924065A000BAF00 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9544F5B32924065A000BAF00 /* ProfileViewController.swift */; };
 		9544F5B6292556A5000BAF00 /* WelcomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9544F5B5292556A5000BAF00 /* WelcomeViewController.swift */; };
+		956656102B18D8E8007315F4 /* OfflineData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 9566560E2B18D8E8007315F4 /* OfflineData.xcdatamodeld */; };
 		959D981E2927DEE100603C03 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 959D981D2927DEE100603C03 /* GoogleService-Info.plist */; };
 		959D982029281D5E00603C03 /* DatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 959D981F29281D5E00603C03 /* DatabaseManager.swift */; };
 		95E764A92AC4DBB700CF52BE /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 95E764A82AC4DBB700CF52BE /* SDWebImage */; };
@@ -45,7 +45,6 @@
 		9544F58A2923FE56000BAF00 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9544F58C2923FE56000BAF00 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		9544F5912923FE56000BAF00 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		9544F5942923FE56000BAF00 /* Nuntius.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Nuntius.xcdatamodel; sourceTree = "<group>"; };
 		9544F5962923FE5B000BAF00 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9544F5992923FE5B000BAF00 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		9544F59B2923FE5B000BAF00 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -55,6 +54,7 @@
 		9544F5B0292405F0000BAF00 /* LogViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogViewController.swift; sourceTree = "<group>"; };
 		9544F5B32924065A000BAF00 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		9544F5B5292556A5000BAF00 /* WelcomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeViewController.swift; sourceTree = "<group>"; };
+		9566560F2B18D8E8007315F4 /* OfflineData.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = OfflineData.xcdatamodel; sourceTree = "<group>"; };
 		959D981D2927DEE100603C03 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		959D981F29281D5E00603C03 /* DatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManager.swift; sourceTree = "<group>"; };
 		95EEA1B1292E7B560037AA3C /* ChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
@@ -123,8 +123,8 @@
 				9544F58A2923FE56000BAF00 /* AppDelegate.swift */,
 				9544F58C2923FE56000BAF00 /* SceneDelegate.swift */,
 				9544F59B2923FE5B000BAF00 /* Info.plist */,
-				9544F5932923FE56000BAF00 /* Nuntius.xcdatamodeld */,
 				959D981D2927DEE100603C03 /* GoogleService-Info.plist */,
+				9566560E2B18D8E8007315F4 /* OfflineData.xcdatamodeld */,
 			);
 			path = Nuntius;
 			sourceTree = "<group>";
@@ -262,13 +262,13 @@
 				9544F5B42924065A000BAF00 /* ProfileViewController.swift in Sources */,
 				95EEA1B4292E7F250037AA3C /* LogCell.swift in Sources */,
 				9544F5AF2924051B000BAF00 /* SearchViewController.swift in Sources */,
-				9544F5952923FE56000BAF00 /* Nuntius.xcdatamodeld in Sources */,
 				959D982029281D5E00603C03 /* DatabaseManager.swift in Sources */,
 				95EEA1B2292E7B570037AA3C /* ChatViewController.swift in Sources */,
 				9544F5A92924011C000BAF00 /* RegisterViewController.swift in Sources */,
 				9544F5A72924010E000BAF00 /* LoginViewController.swift in Sources */,
 				9544F58D2923FE56000BAF00 /* SceneDelegate.swift in Sources */,
 				95EEA1B6292EC3B70037AA3C /* StorageManager.swift in Sources */,
+				956656102B18D8E8007315F4 /* OfflineData.xcdatamodeld in Sources */,
 				954256322AB6074400D1FAF0 /* ImageDownloader.swift in Sources */,
 				95EEA1BC292FA2CB0037AA3C /* User.swift in Sources */,
 			);
@@ -549,13 +549,13 @@
 /* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
-		9544F5932923FE56000BAF00 /* Nuntius.xcdatamodeld */ = {
+		9566560E2B18D8E8007315F4 /* OfflineData.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
-				9544F5942923FE56000BAF00 /* Nuntius.xcdatamodel */,
+				9566560F2B18D8E8007315F4 /* OfflineData.xcdatamodel */,
 			);
-			currentVersion = 9544F5942923FE56000BAF00 /* Nuntius.xcdatamodel */;
-			path = Nuntius.xcdatamodeld;
+			currentVersion = 9566560F2B18D8E8007315F4 /* OfflineData.xcdatamodel */;
+			path = OfflineData.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};
