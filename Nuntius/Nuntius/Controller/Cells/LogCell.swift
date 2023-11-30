@@ -33,7 +33,7 @@ class LogCell: UITableViewCell {
                 if(lastm.prefix(5)=="https"){
                     self.lastMessage.text="Image"
                 }else{
-                    self.lastMessage.text=lastMessage["Content"] as! String
+                    self.lastMessage.text=lastMessage["Content"] as? String
                 }
                 let date = lastMessage["Date"] as! String
                 let tdate = controller.formatter.string(from: Date())
@@ -42,7 +42,6 @@ class LogCell: UITableViewCell {
                 if(d==td){
                     d=date.suffix(7)
                 }
-                print(String(d))
                 self.dateLabel.text = String(d)
             case .failure(_):
                 self.lastMessage.text=nil

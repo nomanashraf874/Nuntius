@@ -1,0 +1,17 @@
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21754" systemVersion="22A8380" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
+<entity name="Chat" representedClassName="Chat" syncable="YES" codeGenerationType="class">
+    <attribute name="chatId" optional="YES" attributeType="String"/>
+    <attribute name="chatName" optional="YES" attributeType="String"/>
+    <attribute name="otherUserEmail" optional="YES" attributeType="String"/>
+    <attribute name="profilePicture" optional="YES" attributeType="Binary"/>
+    <relationship name="lastMessage" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MessageData" syncable="YES"/>
+    <relationship name="messages" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="MessageData" inverseName="chat" inverseEntity="MessageData"/>
+</entity>
+<entity name="MessageData" representedClassName="MessageData" syncable="YES" codeGenerationType="class">
+    <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+    <attribute name="imageContent" optional="YES" attributeType="Binary"/>
+    <attribute name="sender" optional="YES" attributeType="String"/>
+    <attribute name="textContent" optional="YES" attributeType="String"/>
+    <relationship name="chat" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Chat" inverseName="messages" inverseEntity="Chat"/>
+</entity>
+</model>

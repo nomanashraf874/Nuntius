@@ -159,7 +159,7 @@
                                                                 <rect key="frame" x="22" y="8" width="340" height="64"/>
                                                                 <color key="textColor" name="BrandBlue"/>
                                                                 <fontDescription key="fontDescription" type="system" pointSize="25"/>
-                                                                <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
+                                                                <textInputTraits key="textInputTraits"/>
                                                             </textField>
                                                         </subviews>
                                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -759,7 +759,7 @@
     </scenes>
     <inferredMetricsTieBreakers>
         <segue reference="yq7-0G-f73"/>
-        <segue reference="yyS-Cr-5Sf"/>
+        <segue reference="im2-lZ-cP6"/>
         <segue reference="dIF-QY-kD4"/>
     </inferredMetricsTieBreakers>
     <resources>

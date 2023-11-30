@@ -122,6 +122,7 @@ extension ChatViewController: MessagesDataSource, MessagesDisplayDelegate, Messa
     func cellTopLabelAttributedText(for message: MessageType, at indexPath: IndexPath) -> NSAttributedString? {
         if indexPath.section % 7 == 0 {
             var editedDate = MessageKitDateFormatter.shared.string(from: message.sentDate)
+            //fix
             if editedDate[0]=="T"{
                 editedDate = String(editedDate.prefix(5))
             }

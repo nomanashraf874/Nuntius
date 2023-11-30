@@ -14,6 +14,7 @@ class LogViewController: UIViewController {
     @IBOutlet var emptyChat: UILabel!
     var chatLog: [[String: Any]]=[]
     let email = (UserDefaults.standard.value(forKey: "email") as? String)!
+    let db = DatabaseManager()
     override func viewWillAppear(_ animated: Bool) {
         tableView.reloadData()
     }
@@ -25,13 +26,14 @@ class LogViewController: UIViewController {
             self.fetchChats()
         }
         self.tableView.register(UINib(nibName: "LogCell", bundle: nil), forCellReuseIdentifier: "LogCell")
-        DatabaseManager.base.getName(email: email)
         fetchChats()
     }
     func fetchChats(){
-        DatabaseManager.base.getChats(email: email) { chats in
-            self.chatLog=chats
-            self.tableView.reloadData()
+        db.getChats(email: email) { chats in
+            DispatchQueue.main.async {
+                self.chatLog=chats
+                self.tableView.reloadData()
+            }
         }
         tableView.isHidden=false
     }
@@ -81,7 +83,9 @@ class LogViewController: UIViewController {
         
         let createAction = UIAlertAction(title: "Create", style: .default) { [self] _ in
             if let chatName = alertController.textFields?.first?.text {
-                DatabaseManager.base.addChat([self.email], chatName)
+                Task{
+                    await DatabaseManager.base.addChat([self.email], chatName)
+                }
             }
         }
         

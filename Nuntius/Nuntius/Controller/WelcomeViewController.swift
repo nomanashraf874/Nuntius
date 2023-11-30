@@ -4,16 +4,21 @@
 //
 //  Created by Noman Ashraf on 11/16/22.
 //image
-//reg load
-//dab ret
-//unre
+/*
+ to fix:
+ bound to user
+ 3 method auto updating
+ email
+ prefix pron
+ sort by latest
+ synronocity
+ */
 
 import UIKit
 import FirebaseAuth
 class WelcomeViewController: UIViewController {
 
     @IBOutlet var titleLabel: UILabel!
-    //Before view appear if you want to add special animations to view
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.isNavigationBarHidden = true
