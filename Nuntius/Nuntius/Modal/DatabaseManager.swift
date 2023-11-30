@@ -103,7 +103,7 @@ class DatabaseManager {
                 let newChatData: [String: Any] = [
                     "id": chatId,
                     "other_user_email": memberEmails[0],
-                    "name": "FIX"
+                    "name": name
                 ]
                 try await docRef.updateData([
                     "Chats": FieldValue.arrayUnion([otherChatData])
