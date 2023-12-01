@@ -33,6 +33,7 @@ class DatabaseManager {
         let context = self.persistentContainer.viewContext
         let userData = UserData(context: context)
         userData.name = user.username
+        userData.email = user.email
 
         do {
             try context.save()
@@ -82,7 +83,10 @@ class DatabaseManager {
         newChat.chatID=chatId
         newChat.chatName=chatName
         let docRef = db.collection("Emails").document(memberEmails[0])
+        let fetchRequest: NSFetchRequest<UserData> = UserData.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "email == %@", memberEmails[0])
         do {
+            let user = try context.fetch(fetchRequest)
             if memberEmails.count==1{
                 let docRef = db.collection("Emails").document(memberEmails[0])
                 let newChatData: [String: Any] = [
@@ -130,7 +134,7 @@ class DatabaseManager {
                     chatRef.setData(data)
                 }
             }
-        
+            newChat.user=user.first
             try context.save()
         } catch {
             print("Error saving chat: \(error.localizedDescription)")
@@ -138,6 +142,8 @@ class DatabaseManager {
     }
     
     func joinGroupChat(_ email: String,_ id:String){
+        let fetchRequest: NSFetchRequest<UserData> = UserData.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "email == %@", email)
         let docRef = db.collection("Emails").document(email)
         let context = persistentContainer.viewContext
         var newChat = ChatData(context: context)
@@ -152,6 +158,8 @@ class DatabaseManager {
             newChat.chatID=id
             newChat.chatName=name
             do {
+                let user = try context.fetch(fetchRequest)
+                newChat.user = user.first
                 try context.save()
             } catch {
                 print("Error saving chat: \(error.localizedDescription)")
@@ -321,19 +329,27 @@ class DatabaseManager {
                 }
             } else {
                 let context = self.persistentContainer.viewContext
-                let fetchRequest: NSFetchRequest<ChatData> = ChatData.fetchRequest()
-                
+                let fetchRequest: NSFetchRequest<UserData> = UserData.fetchRequest()
+                fetchRequest.predicate = NSPredicate(format: "email == %@", email)
                 do {
                     let fetchedChats = try context.fetch(fetchRequest)
-                    var chatData: [[String: Any]] = []
-                    for chat in fetchedChats {
-                        var chatDict: [String: Any] = [:]
-                        chatDict["id"] = chat.chatID
-                        chatDict["name"] = chat.chatName
-                        chatDict["otherUserEmail"] = chat.otherUserEmail
-                        chatData.append(chatDict)
+                    if let user = fetchedChats.first {
+                        if let chats = user.chats?.allObjects as? [ChatData] {
+                            var chatData: [[String: Any]] = []
+                            for chat in chats{
+                                var chatDict: [String: Any] = [:]
+                                chatDict["id"] = chat.chatID
+                                chatDict["name"] = chat.chatName
+                                chatDict["otherUserEmail"] = chat.otherUserEmail
+                                chatData.append(chatDict)
+                            }
+                            completionHandler(chatData)
+                        }
                     }
-                    completionHandler(chatData)
+                    else{
+                        print("User does not exit")
+                        completionHandler([])
+                    }
                 } catch {
                     print("Error fetching chats from CoreData: \(error.localizedDescription)")
                     completionHandler([])

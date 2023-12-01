@@ -6,7 +6,6 @@
 //image
 /*
  to fix:
- bound to user
  3 method auto updating
  email
  prefix pron

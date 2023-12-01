@@ -17,6 +17,7 @@
         <relationship name="chat" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ChatData" inverseName="messages" inverseEntity="ChatData"/>
     </entity>
     <entity name="UserData" representedClassName="UserData" syncable="YES" codeGenerationType="class">
+        <attribute name="email" optional="YES" attributeType="String"/>
         <attribute name="name" optional="YES" attributeType="String"/>
         <relationship name="chats" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="ChatData" inverseName="user" inverseEntity="ChatData"/>
     </entity>
