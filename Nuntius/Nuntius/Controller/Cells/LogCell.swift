@@ -15,6 +15,7 @@ class LogCell: UITableViewCell {
     @IBOutlet weak var logLabel: UILabel!
     @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var lastMessage: UILabel!
+    let db = DatabaseManager()
     
     var imageUrl : URL? = nil
     override func awakeFromNib() {
@@ -25,7 +26,7 @@ class LogCell: UITableViewCell {
     func configure(_ log: [String: Any]){
         logLabel.text = log["name"] as? String
         let id = log["id"] as? String
-        DatabaseManager.base.getLastMessage(id: id!) { result in
+        db.getLastMessage(id: id!) { result in
             switch result{
             case .success(let lastMessage):
                 let controller = ChatViewController()

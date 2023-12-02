@@ -20,6 +20,7 @@ class ChatViewController: MessagesViewController{
     let email = (UserDefaults.standard.value(forKey: "email") as? String)!
     let url = UserDefaults.standard.value(forKey: "profilePicture") as? URL
     let selfSender = Sender(profileImageURL: "", senderId: (UserDefaults.standard.value(forKey: "email") as? String)!, displayName: "Me")
+    let db = DatabaseManager()
     public let formatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateStyle = .short
@@ -64,7 +65,7 @@ class ChatViewController: MessagesViewController{
     }
     
     func fetchMessages(){
-        DatabaseManager.base.getMessages(chatID: id) { messageList in
+        db.getMessages(chatID: id) { messageList in
             self.messages=messageList
             DispatchQueue.main.async {
                 self.messagesCollectionView.reloadData()

@@ -12,9 +12,7 @@ import CryptoKit
 import Network
 
 class DatabaseManager {
-//    init(){
-//        monitor.start(queue: queue)
-//    }
+    
     static let base = DatabaseManager()
     private let db = Firestore.firestore()
     let monitor = NWPathMonitor()
@@ -168,34 +166,35 @@ class DatabaseManager {
     }
     
     func getName(email:String, completion: @escaping (String) -> Void){
-        monitor.start(queue: queue)
-        let currentPath = monitor.currentPath
-        if currentPath.status == .satisfied {
-            let docRef = self.db.collection("Emails").document(email)
-            var ret = ""
-            docRef.getDocument { document, error in
-                if let document = document, document.exists {
-                    ret=document.data()?["Username"] as! String
-                    completion(ret)
-                } else {
-                    print("Username Not Set")
+        monitor.pathUpdateHandler = { path in
+            if path.status == .satisfied {
+                let docRef = self.db.collection("Emails").document(email)
+                var ret = ""
+                docRef.getDocument { document, error in
+                    if let document = document, document.exists {
+                        ret=document.data()?["Username"] as! String
+                        completion(ret)
+                    } else {
+                        print("Username Not Set")
+                    }
                 }
-            }
-
-        } else{
-            let request: NSFetchRequest<UserData> = UserData.fetchRequest()
-            let context = self.persistentContainer.viewContext
-            do {
-                let users = try context.fetch(request)
-                if let user = users.last {
-                    completion(user.name ?? "No name")
-                } else {
-                    print("No user found")
+                
+            } else{
+                let request: NSFetchRequest<UserData> = UserData.fetchRequest()
+                let context = self.persistentContainer.viewContext
+                do {
+                    let users = try context.fetch(request)
+                    if let user = users.last {
+                        completion(user.name ?? "No name")
+                    } else {
+                        print("No user found")
+                    }
+                } catch {
+                    print("Error fetching user: \(error.localizedDescription)")
                 }
-            } catch {
-                print("Error fetching user: \(error.localizedDescription)")
             }
         }
+        monitor.start(queue: queue)
     }
     
     func getName(email: String) async -> String{
@@ -319,7 +318,6 @@ class DatabaseManager {
                     if let document = document, document.exists {
                         if let chatData = document.data()?["Chats"] as? [[String: Any]] {
                             completionHandler(chatData)
-                            self.monitor.cancel()
                         } else {
                             print("Chats data not found")
                         }
@@ -385,134 +383,136 @@ class DatabaseManager {
 
     
     func getMessages(chatID: String, completionHandler: @escaping([Message])->Void){
-        monitor.start(queue: queue)
-        let currentPath = monitor.currentPath
-        if currentPath.status == .satisfied {
-            let docRef = self.db.collection("Chats").document(chatID)
-            docRef.addSnapshotListener { (document, error) in
-                if let document = document, document.exists {
-                    let messages=document.data()!["messages"] as! [[String : Any]]
-                    let controller = ChatViewController()
-                    var messageFinal: [Message] = []
-                    for message in messages{
-                        guard let name = message["Name"] as? String,
-                                let content = message["Content"] as? String,
-                                let senderEmail = message["SenderEmail"] as? String,
-                                let dateString = message["Date"] as? String,
-                                let item = message["kind"] as? String,
-                                let date = controller.formatter.date(from: dateString)
-                        else {
-                            return
-                        }
-                        var kind: MessageKind?
-                        if item == "photo" {
-                            guard let imageUrl = URL(string: content),
-                                    let placeHolder = UIImage(systemName: "plus") else {
-                                        return
-                                    }
-                            let media = ImageMediaItem(url: imageUrl,
-                                                image: nil,
-                                                placeholderImage: placeHolder,
-                                                size: CGSize(width: 300, height: 300))
-                            kind = .photo(media)
-                        }
-                        else{
-                            kind = .text(content)
-                        }
+        monitor.pathUpdateHandler = { path in
+            if path.status == .satisfied {
+                let docRef = self.db.collection("Chats").document(chatID)
+                docRef.addSnapshotListener { (document, error) in
+                    if let document = document, document.exists {
+                        let messages=document.data()!["messages"] as! [[String : Any]]
+                        let controller = ChatViewController()
+                        var messageFinal: [Message] = []
+                        for message in messages{
+                            guard let name = message["Name"] as? String,
+                                  let content = message["Content"] as? String,
+                                  let senderEmail = message["SenderEmail"] as? String,
+                                  let dateString = message["Date"] as? String,
+                                  let item = message["kind"] as? String,
+                                  let date = controller.formatter.date(from: dateString)
+                            else {
+                                return
+                            }
+                            var kind: MessageKind?
+                            if item == "photo" {
+                                guard let imageUrl = URL(string: content),
+                                      let placeHolder = UIImage(systemName: "plus") else {
+                                    return
+                                }
+                                let media = ImageMediaItem(url: imageUrl,
+                                                           image: nil,
+                                                           placeholderImage: placeHolder,
+                                                           size: CGSize(width: 300, height: 300))
+                                kind = .photo(media)
+                            }
+                            else{
+                                kind = .text(content)
+                            }
                             
-                        let sender = Sender(profileImageURL: "",
-                                            senderId: senderEmail,
-                                            displayName: name)
-                            
-                        messageFinal.append(Message(sender: sender,
-                                                    messageId: "",
-                                                    sentDate: date,
-                                                    kind: kind!))
-                    }
-                    completionHandler(messageFinal)
-                } else {
-                    print("Error Getting Chats")
-                }
-            }
-
-        } else {
-            let context = self.persistentContainer.viewContext
-            let fetchRequest: NSFetchRequest<ChatData> = ChatData.fetchRequest()
-            fetchRequest.predicate = NSPredicate(format: "chatID == %@", chatID)
-            do {
-                let fetchedChats = try context.fetch(fetchRequest)
-                if let chat = fetchedChats.first {
-                    if let messages = chat.messages?.allObjects as? [MessageData] {
-                        var res = [Message]()
-                        for mes in messages{
-                            let content = mes.textContent ?? "Image Not Loaded"
                             let sender = Sender(profileImageURL: "",
-                                                senderId: mes.sender!,
-                                                displayName: mes.sender!)
-                            let curr = Message(sender: sender, messageId: "", sentDate: mes.time!, kind: .text(content))
-                            res.append(curr)
+                                                senderId: senderEmail,
+                                                displayName: name)
+                            
+                            messageFinal.append(Message(sender: sender,
+                                                        messageId: "",
+                                                        sentDate: date,
+                                                        kind: kind!))
                         }
-                        completionHandler(res)
+                        completionHandler(messageFinal)
+                    } else {
+                        print("Error Getting Chats")
                     }
+                }
+                
+            } else {
+                let context = self.persistentContainer.viewContext
+                let fetchRequest: NSFetchRequest<ChatData> = ChatData.fetchRequest()
+                fetchRequest.predicate = NSPredicate(format: "chatID == %@", chatID)
+                do {
+                    let fetchedChats = try context.fetch(fetchRequest)
+                    if let chat = fetchedChats.first {
+                        if let messages = chat.messages?.allObjects as? [MessageData] {
+                            var res = [Message]()
+                            for mes in messages{
+                                let content = mes.textContent ?? "Image Not Loaded"
+                                let sender = Sender(profileImageURL: "",
+                                                    senderId: mes.sender!,
+                                                    displayName: mes.sender!)
+                                let curr = Message(sender: sender, messageId: "", sentDate: mes.time!, kind: .text(content))
+                                res.append(curr)
+                            }
+                            completionHandler(res)
+                        }
                         
-                } else {
-                    print("Chat not found for ID: \(chatID)")
+                    } else {
+                        print("Chat not found for ID: \(chatID)")
+                        completionHandler([])
+                    }
+                } catch {
+                    print("Error fetching chat from CoreData: \(error.localizedDescription)")
                     completionHandler([])
                 }
-            } catch {
-                print("Error fetching chat from CoreData: \(error.localizedDescription)")
-                completionHandler([])
             }
         }
+        monitor.start(queue: queue)
     }
     
     func getLastMessage(id: String, completionHandler: @escaping(Result<[String : Any], Error>)->Void){
-        monitor.start(queue: queue)
-        let currentPath = monitor.currentPath
-        if currentPath.status == .satisfied {
-            let docRef = self.db.collection("Chats").document(id)
-            docRef.getDocument{ (document, error) in
-                if let document = document, document.exists {
-                    if let messages = document.data()?["messages"] as? [[String: Any]], !messages.isEmpty {
-                        let lastMessage = messages.last!
-                        completionHandler(.success(lastMessage))
-                    }
-                    else{
+        monitor.pathUpdateHandler = { path in
+            if path.status == .satisfied {
+                let docRef = self.db.collection("Chats").document(id)
+                docRef.getDocument{ (document, error) in
+                    if let document = document, document.exists {
+                        if let messages = document.data()?["messages"] as? [[String: Any]], !messages.isEmpty {
+                            let lastMessage = messages.last!
+                            completionHandler(.success(lastMessage))
+                        }
+                        else{
+                            completionHandler(.failure(CustomError.noLastMessage))
+                        }
+                    }else{
                         completionHandler(.failure(CustomError.noLastMessage))
                     }
-                }else{
-                    completionHandler(.failure(CustomError.noLastMessage))
                 }
-            }
-        } else {
-            let context = self.persistentContainer.viewContext
-            let fetchRequest: NSFetchRequest<ChatData> = ChatData.fetchRequest()
-            fetchRequest.predicate = NSPredicate(format: "chatID == %@", id)
-            do {
-                let fetchedChats = try context.fetch(fetchRequest)
-                if let chat = fetchedChats.first {
-                    if let mes = chat.lastMessage{
-                        let curr: [String:Any] = [
-                            "Content":mes.textContent ?? "Image not Loaded",
-                            "Date":mes.time!
-                        ]
-                        completionHandler(.success(curr))
+            } else {
+                let context = self.persistentContainer.viewContext
+                let fetchRequest: NSFetchRequest<ChatData> = ChatData.fetchRequest()
+                fetchRequest.predicate = NSPredicate(format: "chatID == %@", id)
+                do {
+                    let fetchedChats = try context.fetch(fetchRequest)
+                    if let chat = fetchedChats.first {
+                        if let mes = chat.lastMessage{
+                            let curr: [String:Any] = [
+                                "Content":mes.textContent ?? "Image not Loaded",
+                                "Date":mes.time!
+                            ]
+                            completionHandler(.success(curr))
                             
+                        }
+                        else{
+                            completionHandler(.failure(CustomError.noLastMessage))
+                        }
                     }
                     else{
+                        print("Chat not found for ID: \(id)")
                         completionHandler(.failure(CustomError.noLastMessage))
                     }
-                }
-                else{
-                    print("Chat not found for ID: \(id)")
+                    
+                }catch {
+                    print("Error fetching chat from CoreData: \(error.localizedDescription)")
                     completionHandler(.failure(CustomError.noLastMessage))
                 }
-                    
-            }catch {
-                print("Error fetching chat from CoreData: \(error.localizedDescription)")
-                completionHandler(.failure(CustomError.noLastMessage))
             }
         }
+        monitor.start(queue: queue)
     }
     
     
