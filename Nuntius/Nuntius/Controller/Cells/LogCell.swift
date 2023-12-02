@@ -37,12 +37,11 @@ class LogCell: UITableViewCell {
                 }
                 let date = lastMessage["Date"] as! String
                 let tdate = controller.formatter.string(from: Date())
-                var d = date.prefix(8)
+                var d = date.split(separator: ",")[0]
                 let td = tdate.prefix(8)
                 if(d==td){
                     d=date.suffix(7)
                 }
-                print(String(d))
                 self.dateLabel.text = String(d)
             case .failure(_):
                 self.lastMessage.text=nil
@@ -66,5 +65,6 @@ class LogCell: UITableViewCell {
             self.logImage.layer.masksToBounds = true
         }
     }
+    
 
 }

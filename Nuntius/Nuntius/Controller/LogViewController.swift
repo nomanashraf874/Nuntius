@@ -120,6 +120,7 @@ extension LogViewController: UITableViewDelegate, UITableViewDataSource {
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "LogCell", for: indexPath) as! LogCell
+        cell.selectionStyle = .none
         cell.configure(chatLog[indexPath.row])
         return cell
     }
@@ -153,7 +154,6 @@ extension LogViewController: UITableViewDelegate, UITableViewDataSource {
         let url = cell.imageUrl
         UserDefaults.standard.set(url, forKey: "profilePicture")
         let indexPath = tableView.indexPath(for:cell)!
-        let otherEmail = chatLog[indexPath.row]["other_user_email"] as? String
         let id = chatLog[indexPath.row]["id"] as? String
         let name = chatLog[indexPath.row]["name"] as? String
         let chatViewController = segue.destination as! ChatViewController

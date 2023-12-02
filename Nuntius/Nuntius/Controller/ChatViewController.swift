@@ -29,9 +29,6 @@ class ChatViewController: MessagesViewController{
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        self.navigationItem.title=name
-        let chatCode = UIBarButtonItem(title: "Code", style: .plain, target: self, action: #selector(getCode))
-        navigationItem.rightBarButtonItems = [chatCode]
         messagesCollectionView.messagesDataSource = self
         messagesCollectionView.messagesLayoutDelegate = self
         messagesCollectionView.messagesDisplayDelegate = self
@@ -51,6 +48,12 @@ class ChatViewController: MessagesViewController{
         }
         messageInputBar.setLeftStackViewWidthConstant(to: 36, animated: false)
         messageInputBar.setStackViewItems([inputButton], forStack: .left, animated: false)
+        self.navigationItem.title=name
+        if otherUserEmail == nil{
+            let chatCode = UIBarButtonItem(title: "Code", style: .plain, target: self, action: #selector(getCode))
+            navigationItem.rightBarButtonItems = [chatCode]
+        }
+        
     }
     
     @objc func getCode() {
@@ -121,13 +124,8 @@ extension ChatViewController: MessagesDataSource, MessagesDisplayDelegate, Messa
     }
     func cellTopLabelAttributedText(for message: MessageType, at indexPath: IndexPath) -> NSAttributedString? {
         if indexPath.section % 7 == 0 {
-            var editedDate = MessageKitDateFormatter.shared.string(from: message.sentDate)
-            if editedDate[0]=="T"{
-                editedDate = String(editedDate.prefix(5))
-            }
-            else{
-                editedDate = String(editedDate.prefix(8))
-            }
+            var editedDate = String(MessageKitDateFormatter.shared.string(from: message.sentDate).split(separator: ",")[0])
+            
             return NSAttributedString(
                 string: editedDate,
                 attributes: [
