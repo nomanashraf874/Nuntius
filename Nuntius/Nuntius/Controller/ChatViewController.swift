@@ -10,6 +10,7 @@ import MessageKit
 import InputBarAccessoryView
 import FirebaseFirestore
 import SDWebImage
+import Network
 
 class ChatViewController: MessagesViewController{
     private var messages = [Message]()
@@ -20,12 +21,15 @@ class ChatViewController: MessagesViewController{
     let email = (UserDefaults.standard.value(forKey: "email") as? String)!
     let url = UserDefaults.standard.value(forKey: "profilePicture") as? URL
     let selfSender = Sender(profileImageURL: "", senderId: (UserDefaults.standard.value(forKey: "email") as? String)!, displayName: "Me")
-    public let formatter: DateFormatter = {
+    let db = DatabaseManager()
+    let formatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateStyle = .short
         formatter.timeStyle = .short
         return formatter
       }()
+    let monitor = NWPathMonitor()
+    let queue = DispatchQueue(label: "ChatNetworkMonitor")
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -53,7 +57,7 @@ class ChatViewController: MessagesViewController{
             let chatCode = UIBarButtonItem(title: "Code", style: .plain, target: self, action: #selector(getCode))
             navigationItem.rightBarButtonItems = [chatCode]
         }
-        
+        monitor.start(queue: queue)
     }
     
     @objc func getCode() {
@@ -67,7 +71,7 @@ class ChatViewController: MessagesViewController{
     }
     
     func fetchMessages(){
-        DatabaseManager.base.getMessages(chatID: id) { messageList in
+        db.getMessages(chatID: id) { messageList in
             self.messages=messageList
             DispatchQueue.main.async {
                 self.messagesCollectionView.reloadData()
@@ -182,51 +186,67 @@ extension ChatViewController: UIImagePickerControllerDelegate, UINavigationContr
 
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         picker.dismiss(animated: true, completion: nil)
-        let messageId = email+"_"+formatter.string(from: Date())
-        if let image = info[.editedImage] as? UIImage, let imageData =  image.pngData() {
-            let fileName = "photoMessage" + messageId.replacingOccurrences(of: " ", with: "-") + ".png"
-            StorageMangager.base.storeImage(with: imageData, fileName: fileName, completionHandler: { urlString in
-                print("Uploaded Message Photo: \(urlString)")
-                
-                let url = URL(string: urlString)
-                let media = ImageMediaItem(url: url,
-                                           image: nil,
-                                           placeholderImage: UIImage(systemName: "photo.artframe")!,
-                                           size: .zero)
-                
-                let message = Message(sender: self.selfSender,
-                                      messageId: messageId,
-                                      sentDate: Date(),
-                                      kind: .photo(media))
-                var id = ""
-                if let otherUserEmail = self.otherUserEmail{
-                    id = DatabaseManager.base.getChatID([otherUserEmail, self.email])
-                }
-                else{
-                    id = DatabaseManager.base.getChatID([self.email])
-                }
-                DatabaseManager.base.addMessage(chatID: id, email: self.email, content: message, name: self.name)
-            })
+        let currentPath = monitor.currentPath
+        if currentPath.status == .satisfied{
+            let messageId = email+"_"+formatter.string(from: Date())
+            if let image = info[.editedImage] as? UIImage, let imageData =  image.pngData() {
+                let fileName = "photoMessage" + messageId.replacingOccurrences(of: " ", with: "-") + ".png"
+                StorageMangager.base.storeImage(with: imageData, fileName: fileName, completionHandler: { urlString in
+                    print("Uploaded Message Photo: \(urlString)")
+                    
+                    let url = URL(string: urlString)
+                    let media = ImageMediaItem(url: url,
+                                               image: nil,
+                                               placeholderImage: UIImage(systemName: "photo.artframe")!,
+                                               size: .zero)
+                    
+                    let message = Message(sender: self.selfSender,
+                                          messageId: messageId,
+                                          sentDate: Date(),
+                                          kind: .photo(media))
+                    var id = ""
+                    if let otherUserEmail = self.otherUserEmail{
+                        id = DatabaseManager.base.getChatID([otherUserEmail, self.email])
+                    }
+                    else{
+                        id = DatabaseManager.base.getChatID([self.email])
+                    }
+                    DatabaseManager.base.addMessage(chatID: id, email: self.email, content: message, name: self.name)
+                })
+            }
+        } else{
+            let alertController = UIAlertController(title: "Offline", message: "Please connect to internet to access chat", preferredStyle: .actionSheet)
+            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+            alertController.addAction(cancelAction)
+            self.present(alertController, animated: true, completion: nil)
         }
     }
 }
 extension ChatViewController: InputBarAccessoryViewDelegate {
     func inputBar(_ inputBar: InputBarAccessoryView, didPressSendButtonWith text: String) {
-        guard !text.replacingOccurrences(of: " ", with: "").isEmpty
-        else {
-            return
+        let currentPath = monitor.currentPath
+        if currentPath.status == .satisfied{
+            guard !text.replacingOccurrences(of: " ", with: "").isEmpty
+            else {
+                return
+            }
+            let selfSender = self.selfSender
+            
+            let message = Message(sender: selfSender,
+                                  messageId: "",
+                                  sentDate: Date(),
+                                  kind: .text(text))
+            
+            
+            DatabaseManager.base.addMessage(chatID: id, email: email, content: message, name: name)
+            self.messageInputBar.inputTextView.text = nil
+            fetchMessages()
+        } else{
+            let alertController = UIAlertController(title: "Offline", message: "Please connect to internet to access wifi", preferredStyle: .actionSheet)
+            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+            alertController.addAction(cancelAction)
+            self.present(alertController, animated: true, completion: nil)
         }
-        let selfSender = self.selfSender
-        
-        let message = Message(sender: selfSender,
-                              messageId: "",
-                              sentDate: Date(),
-                              kind: .text(text))
-        
-        
-        DatabaseManager.base.addMessage(chatID: id, email: email, content: message, name: name)
-        self.messageInputBar.inputTextView.text = nil
-        fetchMessages()
     }
     
     

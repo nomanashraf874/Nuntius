@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22225" systemVersion="23B81" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="ChatData" representedClassName="ChatData" syncable="YES" codeGenerationType="class">
+        <attribute name="chatID" optional="YES" attributeType="String"/>
+        <attribute name="chatName" optional="YES" attributeType="String"/>
+        <attribute name="otherUserEmail" optional="YES" attributeType="String"/>
+        <attribute name="profilePicture" optional="YES" attributeType="Binary"/>
+        <relationship name="lastMessage" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MessageData"/>
+        <relationship name="messages" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="MessageData" inverseName="chat" inverseEntity="MessageData"/>
+        <relationship name="user" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="UserData" inverseName="chats" inverseEntity="UserData"/>
+    </entity>
+    <entity name="MessageData" representedClassName="MessageData" syncable="YES" codeGenerationType="class">
+        <attribute name="imageContent" optional="YES" attributeType="Binary"/>
+        <attribute name="senderEmail" optional="YES" attributeType="String"/>
+        <attribute name="senderName" optional="YES" attributeType="String"/>
+        <attribute name="textContent" optional="YES" attributeType="String"/>
+        <attribute name="time" optional="YES" attributeType="String"/>
+        <relationship name="chat" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ChatData" inverseName="messages" inverseEntity="ChatData"/>
+    </entity>
+    <entity name="UserData" representedClassName="UserData" syncable="YES" codeGenerationType="class">
+        <attribute name="email" optional="YES" attributeType="String"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <relationship name="chats" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="ChatData" inverseName="user" inverseEntity="ChatData"/>
+    </entity>
+</model>

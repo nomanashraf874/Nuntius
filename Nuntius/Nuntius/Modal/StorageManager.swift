@@ -14,7 +14,7 @@ class StorageMangager {
     
     private let storage = Storage.storage().reference()
     
-    public func storePicture(with data: Data, fileName: String, completionHandler: @escaping(String) -> Void){
+    func storePicture(with data: Data, fileName: String, completionHandler: @escaping(String) -> Void){
         storage.child("profileImages/\(fileName)").putData(data, metadata: nil, completion: {metadata,error in
             if let e = error {
                 print("putDataERROR\(e)")
@@ -30,7 +30,7 @@ class StorageMangager {
             }
         })
     }
-    public func storeImage(with data: Data, fileName: String, completionHandler: @escaping(String) -> Void){
+    func storeImage(with data: Data, fileName: String, completionHandler: @escaping(String) -> Void){
         storage.child("messageImages/\(fileName)").putData(data, metadata: nil, completion: {metadata,error in
             if let e = error {
                 print("putDataERROR\(e)")
@@ -47,7 +47,7 @@ class StorageMangager {
     }
     
     //test 1: check if only case reg
-    public func getURL(for path: String, completionHandler: @escaping (URL) -> Void) {
+    func getURL(for path: String, completionHandler: @escaping (URL) -> Void) {
         let reference = storage.child(path)
         
         reference.downloadURL(completion: { url, error in

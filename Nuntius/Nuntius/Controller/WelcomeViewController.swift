@@ -4,16 +4,12 @@
 //
 //  Created by Noman Ashraf on 11/16/22.
 //image
-//reg load
-//dab ret
-//unre
 
 import UIKit
 import FirebaseAuth
 class WelcomeViewController: UIViewController {
 
     @IBOutlet var titleLabel: UILabel!
-    //Before view appear if you want to add special animations to view
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.isNavigationBarHidden = true
@@ -28,7 +24,7 @@ class WelcomeViewController: UIViewController {
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        checkIfLoggedIn()
+        //checkIfLoggedIn()
         titleLabel.text=""
         var index = 0;
         let titleText = "꒰ঌNuntius໒꒱"

@@ -25,6 +25,7 @@
 		9544F5B1292405F0000BAF00 /* LogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9544F5B0292405F0000BAF00 /* LogViewController.swift */; };
 		9544F5B42924065A000BAF00 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9544F5B32924065A000BAF00 /* ProfileViewController.swift */; };
 		9544F5B6292556A5000BAF00 /* WelcomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9544F5B5292556A5000BAF00 /* WelcomeViewController.swift */; };
+		95771E7F2B165D0100650358 /* OfflineData.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 95771E7D2B165D0000650358 /* OfflineData.xcdatamodeld */; };
 		959D981E2927DEE100603C03 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 959D981D2927DEE100603C03 /* GoogleService-Info.plist */; };
 		959D982029281D5E00603C03 /* DatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 959D981F29281D5E00603C03 /* DatabaseManager.swift */; };
 		95E764A92AC4DBB700CF52BE /* SDWebImage in Frameworks */ = {isa = PBXBuildFile; productRef = 95E764A82AC4DBB700CF52BE /* SDWebImage */; };
@@ -53,6 +54,7 @@
 		9544F5B0292405F0000BAF00 /* LogViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogViewController.swift; sourceTree = "<group>"; };
 		9544F5B32924065A000BAF00 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
 		9544F5B5292556A5000BAF00 /* WelcomeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeViewController.swift; sourceTree = "<group>"; };
+		95771E7E2B165D0000650358 /* OfflineData.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = OfflineData.xcdatamodel; sourceTree = "<group>"; };
 		959D981D2927DEE100603C03 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		959D981F29281D5E00603C03 /* DatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManager.swift; sourceTree = "<group>"; };
 		95EEA1B1292E7B560037AA3C /* ChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
@@ -119,6 +121,7 @@
 				9544F5A5292400AE000BAF00 /* View */,
 				9544F5A12924002B000BAF00 /* Controller */,
 				9544F58A2923FE56000BAF00 /* AppDelegate.swift */,
+				95771E7D2B165D0000650358 /* OfflineData.xcdatamodeld */,
 				9544F58C2923FE56000BAF00 /* SceneDelegate.swift */,
 				9544F59B2923FE5B000BAF00 /* Info.plist */,
 				959D981D2927DEE100603C03 /* GoogleService-Info.plist */,
@@ -265,6 +268,7 @@
 				9544F5A72924010E000BAF00 /* LoginViewController.swift in Sources */,
 				9544F58D2923FE56000BAF00 /* SceneDelegate.swift in Sources */,
 				95EEA1B6292EC3B70037AA3C /* StorageManager.swift in Sources */,
+				95771E7F2B165D0100650358 /* OfflineData.xcdatamodeld in Sources */,
 				954256322AB6074400D1FAF0 /* ImageDownloader.swift in Sources */,
 				95EEA1BC292FA2CB0037AA3C /* User.swift in Sources */,
 			);
@@ -344,7 +348,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -400,7 +404,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -545,6 +549,19 @@
 			productName = SDWebImage;
 		};
 /* End XCSwiftPackageProductDependency section */
+
+/* Begin XCVersionGroup section */
+		95771E7D2B165D0000650358 /* OfflineData.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				95771E7E2B165D0000650358 /* OfflineData.xcdatamodel */,
+			);
+			currentVersion = 95771E7E2B165D0000650358 /* OfflineData.xcdatamodel */;
+			path = OfflineData.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 9544F57F2923FE56000BAF00 /* Project object */;
 }

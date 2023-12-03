@@ -6,7 +6,7 @@
 //update database update search cause it goes too back. update ui
 import UIKit
 import FirebaseAuth
-class RegisterViewController: UIViewController {
+class RegisterViewController: UIViewController,UITextFieldDelegate {
     
     @IBOutlet var passwordView: UIView!
     @IBOutlet var emailView: UIView!
@@ -22,6 +22,9 @@ class RegisterViewController: UIViewController {
         passwordView.layer.cornerRadius = passwordView.frame.size.height/2.5
         emailView.layer.cornerRadius = emailView.frame.size.height/2.5
         nameView.layer.cornerRadius = nameView.frame.size.height/2.5
+        passwordText.delegate=self
+        userText.delegate=self
+        emailText.delegate=self
         let tapGR = UITapGestureRecognizer(target: self, action: #selector(self.imageTapped))
         profileImage.addGestureRecognizer(tapGR)
         profileImage.isUserInteractionEnabled = true
@@ -87,6 +90,11 @@ class RegisterViewController: UIViewController {
         let alert = UIAlertController(title: "ERROR", message:error, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "Dismiss", style: .cancel, handler: nil))
         present(alert, animated: true)
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+            textField.resignFirstResponder()
+            return true
     }
 
 }

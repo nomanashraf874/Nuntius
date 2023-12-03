@@ -9,7 +9,7 @@
 
 import UIKit
 import FirebaseAuth
-class LoginViewController: UIViewController {
+class LoginViewController: UIViewController,UITextFieldDelegate {
 
     @IBOutlet var emailText: UITextField!
     @IBOutlet var passwordView: UIView!
@@ -21,7 +21,8 @@ class LoginViewController: UIViewController {
         super.viewDidLoad()
         passwordView.layer.cornerRadius = passwordView.frame.size.height/3
         emailView.layer.cornerRadius = emailView.frame.size.height/3
-        
+        passwordText.delegate=self
+        emailText.delegate=self
     }
     
     @IBAction func LoginPressed(_ sender: Any) {
@@ -52,6 +53,10 @@ class LoginViewController: UIViewController {
                 self.performSegue(withIdentifier: "loginToLog", sender: self)
             }
         }
+    }
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
     }
     func loginError(error: String) {
         self.activity.stopAnimating()

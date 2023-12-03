@@ -17,9 +17,9 @@ class ProfileViewController: UIViewController {
     let email = (UserDefaults.standard.value(forKey: "email") as? String)!
     override func viewDidLoad() {
         super.viewDidLoad()
-        let name = (UserDefaults.standard.value(forKey: "name") as? String)!
-        // Do any additional setup after loading the view.
-        nameLabel.text=name
+        DatabaseManager.base.getName(email: email) { name in
+            self.nameLabel.text=name
+        }
         emailLabel.text=email
         profilePictureHeader()
         BG.layer.cornerRadius = BG.frame.size.width/5
@@ -47,6 +47,7 @@ class ProfileViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "Log Out", style: .destructive, handler: { _ in
             do{
                 try FirebaseAuth.Auth.auth().signOut()
+                self.navigationController?.popToRootViewController(animated: false)
                 self.performSegue(withIdentifier: "logout", sender: self)
             }catch{
                 print("Failed to log out")
