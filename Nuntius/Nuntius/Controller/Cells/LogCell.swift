@@ -16,7 +16,12 @@ class LogCell: UITableViewCell {
     @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var lastMessage: UILabel!
     let db = DatabaseManager()
-    
+    let formatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .short
+        return formatter
+      }()
     var imageUrl : URL? = nil
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -29,7 +34,7 @@ class LogCell: UITableViewCell {
         db.getLastMessage(id: id!) { result in
             switch result{
             case .success(let lastMessage):
-                let controller = ChatViewController()
+                print(lastMessage)
                 let lastm = lastMessage["Content"] as! String
                 if(lastm.prefix(5)=="https"){
                     self.lastMessage.text="Image"
@@ -37,7 +42,7 @@ class LogCell: UITableViewCell {
                     self.lastMessage.text=lastMessage["Content"] as? String
                 }
                 let date = lastMessage["Date"] as! String
-                let tdate = controller.formatter.string(from: Date())
+                let tdate = self.formatter.string(from: Date())
                 var d = date.prefix(8)
                 let td = tdate.prefix(8)
                 if(d==td){

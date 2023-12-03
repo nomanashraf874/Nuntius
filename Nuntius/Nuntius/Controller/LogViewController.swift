@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Network
 let notificationKey = "nuntius.addchat"
 class LogViewController: UIViewController {
     
@@ -15,11 +16,14 @@ class LogViewController: UIViewController {
     var chatLog: [[String: Any]]=[]
     let email = (UserDefaults.standard.value(forKey: "email") as? String)!
     let db = DatabaseManager()
+    let monitor = NWPathMonitor()
+    let queue = DispatchQueue(label: "LogNetworkMonitor")
     override func viewWillAppear(_ animated: Bool) {
         tableView.reloadData()
     }
     override func viewDidLoad() {
         super.viewDidLoad()
+        monitor.start(queue: queue)
         tableView.delegate=self
         tableView.dataSource=self
         NotificationCenter.default.addObserver(forName: Notification.Name(rawValue: notificationKey), object: nil, queue: .main) { _ in
@@ -38,22 +42,30 @@ class LogViewController: UIViewController {
         tableView.isHidden=false
     }
     @IBAction func addChat(_ sender: Any) {
-        let alertController = UIAlertController(title: "Chat Type", message: "Choose chat type", preferredStyle: .actionSheet)
+        let currentPath = monitor.currentPath
+        if currentPath.status == .satisfied{
+            let alertController = UIAlertController(title: "Chat Type", message: "Choose chat type", preferredStyle: .actionSheet)
 
-        let oneOnOneAction = UIAlertAction(title: "One-on-One Chat", style: .default) { _ in
-            self.performSegue(withIdentifier: "searchChat", sender: self)
+            let oneOnOneAction = UIAlertAction(title: "One-on-One Chat", style: .default) { _ in
+                self.performSegue(withIdentifier: "searchChat", sender: self)
+            }
+
+            let groupChatAction = UIAlertAction(title: "Group Chat", style: .default) { _ in            self.showGroupChatOptions()
+            }
+            
+            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+            
+            alertController.addAction(oneOnOneAction)
+            alertController.addAction(groupChatAction)
+            alertController.addAction(cancelAction)
+
+            self.present(alertController, animated: true, completion: nil)
+        } else{
+            let alertController = UIAlertController(title: "Offline", message: "Please connect to internet to access wifi", preferredStyle: .actionSheet)
+            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+            alertController.addAction(cancelAction)
+            self.present(alertController, animated: true, completion: nil)
         }
-
-        let groupChatAction = UIAlertAction(title: "Group Chat", style: .default) { _ in            self.showGroupChatOptions()
-        }
-        
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-        
-        alertController.addAction(oneOnOneAction)
-        alertController.addAction(groupChatAction)
-        alertController.addAction(cancelAction)
-
-        self.present(alertController, animated: true, completion: nil)
     }
     func showGroupChatOptions() {
         let groupChatOptionsController = UIAlertController(title: "Group Chat Options", message: "Choose an option", preferredStyle: .actionSheet)

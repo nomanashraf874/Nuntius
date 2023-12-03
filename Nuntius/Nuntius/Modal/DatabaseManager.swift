@@ -17,15 +17,13 @@ class DatabaseManager {
     private let db = Firestore.firestore()
     let monitor = NWPathMonitor()
     let queue = DispatchQueue(label: "NetworkMonitor")
-    lazy var persistentContainer: NSPersistentCloudKitContainer = {
-            let container = NSPersistentCloudKitContainer(name: "OfflineData")
-            container.loadPersistentStores(completionHandler: { (storeDescription, error) in
-                if let error = error as NSError? {
-                    fatalError("Unresolved error \(error), \(error.userInfo)")
-                }
-            })
-            return container
-        }()
+    var persistentContainer: NSPersistentCloudKitContainer = (UIApplication.shared.delegate as! AppDelegate).persistentContainer
+    let formatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .short
+        return formatter
+      }()
     func userToData(with user: User, completionHandler: @escaping (Bool) -> Void) {
         let chats: [[String: Any]] = []
         let context = self.persistentContainer.viewContext
@@ -114,11 +112,6 @@ class DatabaseManager {
                     "Chats": FieldValue.arrayUnion([newChatData])
                 ])
                 newChat.otherUserEmail=memberEmails[1]
-                do {
-                    try context.save()
-                } catch {
-                    print("Error saving chat: \(error.localizedDescription)")
-                }
             }
             let data: [String: Any] = [
                 "chatName":chatName,
@@ -144,7 +137,7 @@ class DatabaseManager {
         fetchRequest.predicate = NSPredicate(format: "email == %@", email)
         let docRef = db.collection("Emails").document(email)
         let context = persistentContainer.viewContext
-        var newChat = ChatData(context: context)
+        let newChat = ChatData(context: context)
         getChatName(chatId: id) { name in
             let newChatData: [String: Any] = [
                 "id": id,
@@ -166,35 +159,34 @@ class DatabaseManager {
     }
     
     func getName(email:String, completion: @escaping (String) -> Void){
-        monitor.pathUpdateHandler = { path in
-            if path.status == .satisfied {
-                let docRef = self.db.collection("Emails").document(email)
-                var ret = ""
-                docRef.getDocument { document, error in
-                    if let document = document, document.exists {
-                        ret=document.data()?["Username"] as! String
-                        completion(ret)
-                    } else {
-                        print("Username Not Set")
-                    }
-                }
-                
-            } else{
-                let request: NSFetchRequest<UserData> = UserData.fetchRequest()
-                let context = self.persistentContainer.viewContext
-                do {
-                    let users = try context.fetch(request)
-                    if let user = users.last {
-                        completion(user.name ?? "No name")
-                    } else {
-                        print("No user found")
-                    }
-                } catch {
-                    print("Error fetching user: \(error.localizedDescription)")
+        monitor.start(queue: queue)
+        let currentPath = monitor.currentPath
+        if currentPath.status == .satisfied {
+            let docRef = self.db.collection("Emails").document(email)
+            var ret = ""
+            docRef.getDocument { document, error in
+                if let document = document, document.exists {
+                    ret=document.data()?["Username"] as! String
+                    completion(ret)
+                } else {
+                    print("Username Not Set")
                 }
             }
+        } else{
+            let request: NSFetchRequest<UserData> = UserData.fetchRequest()
+            request.predicate = NSPredicate(format: "email == %@", email)
+            let context = self.persistentContainer.viewContext
+            do {
+                let users = try context.fetch(request)
+                if let user = users.first {
+                    completion(user.name ?? "No name")
+                } else {
+                    print("No user found")
+                }
+            } catch {
+                print("Error fetching user: \(error.localizedDescription)")
+            }
         }
-        monitor.start(queue: queue)
     }
     
     func getName(email: String) async -> String{
@@ -262,7 +254,6 @@ class DatabaseManager {
         let context = persistentContainer.viewContext
         let fetchRequest: NSFetchRequest<ChatData> = ChatData.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "chatID == %@", chatID)
-            
         switch content.kind {
         case .text(let messageText):
             kind = "text"
@@ -278,8 +269,7 @@ class DatabaseManager {
         default:
             break
         }
-        let controller = ChatViewController()
-        let messageDate = controller.formatter.string(from: content.sentDate)
+        let messageDate = formatter.string(from: content.sentDate)
         let newMessageData: [String: Any] = [
             "Date":messageDate,
             "kind": kind,
@@ -294,11 +284,11 @@ class DatabaseManager {
             let chats = try context.fetch(fetchRequest)
             if let chat = chats.first {
                 let newMessage = MessageData(context: context)
-                newMessage.time = content.sentDate
+                newMessage.time = formatter.string(from: content.sentDate)
                 newMessage.textContent=message
                 newMessage.chat=chat
-                newMessage.sender=name
-                newMessage.chat=chat
+                newMessage.senderName=name
+                newMessage.senderEmail=email
                 chat.lastMessage=newMessage
                 try context.save()
             }else {
@@ -317,6 +307,9 @@ class DatabaseManager {
                 docRef.addSnapshotListener { document, error in
                     if let document = document, document.exists {
                         if let chatData = document.data()?["Chats"] as? [[String: Any]] {
+                            Task{
+                                await self.syncChatsWithCoreData(chatData,email)
+                            }
                             completionHandler(chatData)
                         } else {
                             print("Chats data not found")
@@ -332,14 +325,18 @@ class DatabaseManager {
                 do {
                     let fetchedChats = try context.fetch(fetchRequest)
                     if let user = fetchedChats.first {
-                        if let chats = user.chats?.allObjects as? [ChatData] {
+                        if let chats = user.chats{
                             var chatData: [[String: Any]] = []
-                            for chat in chats{
-                                var chatDict: [String: Any] = [:]
-                                chatDict["id"] = chat.chatID
-                                chatDict["name"] = chat.chatName
-                                chatDict["otherUserEmail"] = chat.otherUserEmail
-                                chatData.append(chatDict)
+                            for xchat in chats{
+                                if let chat = xchat as? ChatData{
+                                    var chatDict: [String: Any] = [:]
+                                    chatDict["id"] = chat.chatID
+                                    chatDict["name"] = chat.chatName
+                                    chatDict["otherUserEmail"] = chat.otherUserEmail
+                                    chatData.append(chatDict)
+                                } else{
+                                    print("ComeonYIMB")
+                                }
                             }
                             completionHandler(chatData)
                         }
@@ -383,13 +380,12 @@ class DatabaseManager {
 
     
     func getMessages(chatID: String, completionHandler: @escaping([Message])->Void){
-        monitor.pathUpdateHandler = { path in
+        monitor.pathUpdateHandler = { [self] path in
             if path.status == .satisfied {
                 let docRef = self.db.collection("Chats").document(chatID)
                 docRef.addSnapshotListener { (document, error) in
                     if let document = document, document.exists {
                         let messages=document.data()!["messages"] as! [[String : Any]]
-                        let controller = ChatViewController()
                         var messageFinal: [Message] = []
                         for message in messages{
                             guard let name = message["Name"] as? String,
@@ -397,7 +393,7 @@ class DatabaseManager {
                                   let senderEmail = message["SenderEmail"] as? String,
                                   let dateString = message["Date"] as? String,
                                   let item = message["kind"] as? String,
-                                  let date = controller.formatter.date(from: dateString)
+                                  let date = self.formatter.date(from: dateString)
                             else {
                                 return
                             }
@@ -426,6 +422,7 @@ class DatabaseManager {
                                                         sentDate: date,
                                                         kind: kind!))
                         }
+                        self.syncMessagesWithCoreData(messages,chatID)
                         completionHandler(messageFinal)
                     } else {
                         print("Error Getting Chats")
@@ -439,17 +436,22 @@ class DatabaseManager {
                 do {
                     let fetchedChats = try context.fetch(fetchRequest)
                     if let chat = fetchedChats.first {
-                        if let messages = chat.messages?.allObjects as? [MessageData] {
+                        if let messages = chat.messages {
                             var res = [Message]()
-                            for mes in messages{
-                                let content = mes.textContent ?? "Image Not Loaded"
-                                let sender = Sender(profileImageURL: "",
-                                                    senderId: mes.sender!,
-                                                    displayName: mes.sender!)
-                                let curr = Message(sender: sender, messageId: "", sentDate: mes.time!, kind: .text(content))
-                                res.append(curr)
+                            for message in messages{
+                                if let mes = message as? MessageData {
+                                    let content = mes.textContent ?? "Image Not Loaded"
+                                    let sender = Sender(profileImageURL: "",
+                                                        senderId: mes.senderEmail!,
+                                                        displayName: mes.senderName!)
+                                    let curr = Message(sender: sender, messageId: "", sentDate: formatter.date(from: mes.time!)! , kind: .text(content))
+                                    res.append(curr)
+                                }
                             }
                             completionHandler(res)
+                        }
+                        else{
+                            print("ComeonYIMB")
                         }
                         
                     } else {
@@ -469,7 +471,7 @@ class DatabaseManager {
         monitor.pathUpdateHandler = { path in
             if path.status == .satisfied {
                 let docRef = self.db.collection("Chats").document(id)
-                docRef.getDocument{ (document, error) in
+                docRef.addSnapshotListener { document, error in
                     if let document = document, document.exists {
                         if let messages = document.data()?["messages"] as? [[String: Any]], !messages.isEmpty {
                             let lastMessage = messages.last!
@@ -514,6 +516,88 @@ class DatabaseManager {
         }
         monitor.start(queue: queue)
     }
+    func syncChatsWithCoreData(_ chatsFromFirebase: [[String: Any]],_ email:String)async {
+        let context = persistentContainer.viewContext
+        let fetchUser: NSFetchRequest<UserData> = UserData.fetchRequest()
+        fetchUser.predicate = NSPredicate(format: "email == %@", email)
+        var user = UserData(context: context)
+        do{
+            let userRequest = try context.fetch(fetchUser)
+            if let userData = userRequest.first{
+                user=userData
+            } else{
+                user.name = await getName(email: email)
+                user.email = email
+                try context.save()
+                await syncChatsWithCoreData(chatsFromFirebase, email)
+                return
+            }
+            for chatData in chatsFromFirebase {
+                let chatID = chatData["id"] as? String ?? ""
+                
+                let fetchRequest: NSFetchRequest<ChatData> = ChatData.fetchRequest()
+                fetchRequest.predicate = NSPredicate(format: "chatID == %@", chatID)
+                let fetchedChats = try context.fetch(fetchRequest)
+                if fetchedChats.isEmpty {
+                    let newChat = ChatData(context: context)
+                    newChat.chatID = chatID
+                    newChat.chatName = chatData["name"] as? String ?? ""
+                    if let otherUserEmail = chatData["otherUserEmail"] as? String{
+                        newChat.otherUserEmail = otherUserEmail
+                    }
+                    newChat.user=user
+                    try context.save()
+                }
+            }
+        }catch {
+            print("Error fetching or updating chat data in CoreData: \(error.localizedDescription)")
+        }
+    }
+    func syncMessagesWithCoreData(_ messagesFromFirebase: [[String: Any]],_ chatID: String) {
+        let context = persistentContainer.viewContext
+        let fetchChat: NSFetchRequest<ChatData> = ChatData.fetchRequest()
+        fetchChat.predicate = NSPredicate(format: "chatID == %@", chatID)
+        var chat = ChatData(context: context)
+        do{
+            let chats = try context.fetch(fetchChat)
+            if let chatData=chats.first{
+                chat=chatData
+            }
+        }catch{
+            print("Error in fetch request in sync message func: \(error.localizedDescription)")
+        }
+        for messageData in messagesFromFirebase {
+            guard let name = messageData["Name"] as? String,
+                  let content = messageData["Content"] as? String,
+                  let senderEmail = messageData["SenderEmail"] as? String,
+                  let dateString = messageData["Date"] as? String,
+                  let item = messageData["kind"] as? String
+            else {
+                print("error")
+                return
+            }
+            let fetchRequest: NSFetchRequest<MessageData> = MessageData.fetchRequest()
+            fetchRequest.predicate = NSPredicate(format: "senderEmail == %@ AND time == %@", senderEmail,dateString)
+            do {
+                let fetchedMessages = try context.fetch(fetchRequest)
+                
+                if fetchedMessages.isEmpty {
+                    let newMessage = MessageData(context: context)
+                    newMessage.time = dateString
+                    newMessage.textContent = item == "photo" ? "Image" : content
+                    newMessage.chat=chat
+                    newMessage.senderName=name
+                    newMessage.senderEmail=senderEmail
+                    chat.lastMessage=newMessage
+                    try context.save()
+                }
+            } catch {
+                print("Error fetching or updating message data in CoreData: \(error.localizedDescription)")
+            }
+        }
+    }
+
+
     
     
 }

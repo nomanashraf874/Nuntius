@@ -6,11 +6,8 @@
 //image
 /*
  to fix:
- 3 method auto updating
- email
- prefix pron
- sort by latest
- synronocity
+bane
+ lastmessage autoload
  */
 
 import UIKit
@@ -32,7 +29,7 @@ class WelcomeViewController: UIViewController {
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        checkIfLoggedIn()
+        //checkIfLoggedIn()
         titleLabel.text=""
         var index = 0;
         let titleText = "꒰ঌNuntius໒꒱"
